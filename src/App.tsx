@@ -15,7 +15,10 @@ import {
   BedDouble,
   GripVertical,
   MapPin,
-  ExternalLink
+  ExternalLink,
+  CloudCheck,
+  RotateCw,
+  CloudOff
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -296,10 +299,9 @@ const App: React.FC = () => {
   const [tripDate, setTripDate] = useState(() => {
     return localStorage.getItem('voyage_date') || '2026年1月';
   });
-  const [items, setItems] = useState<TravelItem[]>(() => {
-    const saved = localStorage.getItem('voyage_items');
-    return saved ? JSON.parse(saved) : INITIAL_DATA;
-  });
+  const [items, setItems] = useState<TravelItem[]>([]); // Start with empty to avoid InitialData overwrite
+  const [hasLoaded, setHasLoaded] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<'saved' | 'syncing' | 'error'>('saved');
 
   // Fetch from local server on mount
   React.useEffect(() => {
@@ -309,32 +311,34 @@ const App: React.FC = () => {
         if (data.items) setItems(data.items);
         if (data.title) setTripTitle(data.title);
         if (data.date) setTripDate(data.date);
+        setHasLoaded(true);
       })
       .catch(() => {
         console.log('Local server not found, falling back to localStorage/InitialData');
-        // Handle migration/initial setup if server is down but it's the first time
-        if (localStorage.getItem('itinerary_version') !== '3.0') {
-          setItems(INITIAL_DATA);
-          setTripTitle('青森・埼玉 鉄道と歴史の旅');
-          setTripDate('2026年1月');
-          localStorage.setItem('itinerary_version', '3.0');
-        }
+        const savedItems = localStorage.getItem('voyage_items');
+        setItems(savedItems ? JSON.parse(savedItems) : INITIAL_DATA);
+        setHasLoaded(true); // Allow saving to local as fallback
       });
   }, []);
 
-  // Sync to local server and localStorage
+  // Sync to local server and localStorage only after initial load
   React.useEffect(() => {
+    if (!hasLoaded) return;
+
     localStorage.setItem('voyage_items', JSON.stringify(items));
     localStorage.setItem('voyage_title', tripTitle);
     localStorage.setItem('voyage_date', tripDate);
 
     // Also try to save to local file
+    setSyncStatus('syncing');
     fetch(`http://${window.location.hostname}:3001/api/itinerary`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title: tripTitle, date: tripDate, items })
-    }).catch(() => {/* Silent fail if server not running */ });
-  }, [items, tripTitle, tripDate]);
+    })
+      .then(() => setSyncStatus('saved'))
+      .catch(() => setSyncStatus('error'));
+  }, [items, tripTitle, tripDate, hasLoaded]);
 
   const [currentTime, setCurrentTime] = useState(() => {
     const now = new Date();
@@ -437,6 +441,16 @@ const App: React.FC = () => {
               onChange={(e) => setTripDate(e.target.value)}
               placeholder="日程を入力（例: 2026年1月20日 - 24日）"
             />
+            <div className={`sync-indicator ${syncStatus}`}>
+              {syncStatus === 'syncing' && <RotateCw size={14} className="spin" />}
+              {syncStatus === 'saved' && <CloudCheck size={14} />}
+              {syncStatus === 'error' && <CloudOff size={14} />}
+              <span>
+                {syncStatus === 'syncing' && '保存中...'}
+                {syncStatus === 'saved' && '同期済み'}
+                {syncStatus === 'error' && '同期エラー'}
+              </span>
+            </div>
           </div>
         </div>
       </header>
