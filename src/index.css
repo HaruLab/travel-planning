@@ -974,10 +974,39 @@ textarea.form-input {
   }
 
   /* Modal Mobile Adjustments */
+  .modal-overlay {
+    padding: 1rem;
+    /* Reduce padding to give more room */
+    align-items: flex-end;
+    /* Bottom sheet feeling on mobile? Or center is fine */
+  }
+
   .modal-card {
     padding: 1.25rem;
     border-radius: 20px;
-    max-height: 90vh;
+    max-height: 85vh;
+    width: 100%;
+    margin: 0;
+  }
+
+  .category-grid {
+    grid-template-columns: repeat(4, 1fr);
+    /* Back to 4 cols but compact */
+    gap: 0.25rem;
+  }
+
+  .category-card {
+    padding: 0.5rem 0.2rem;
+    gap: 0.25rem;
+  }
+
+  .category-card .cat-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .category-card .cat-label {
+    font-size: 0.7rem;
   }
 
   .form-row {
