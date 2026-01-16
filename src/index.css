@@ -29,15 +29,15 @@ body {
 }
 
 .app-container {
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 10rem 2rem;
+  padding: 8rem 4rem;
+  /* Adjusted padding for better balance on wider screen */
 }
 
 /* Header: Bold & Minimal */
 .app-header {
   margin-bottom: 6rem;
-  /* Reduced from 12rem */
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -162,15 +162,51 @@ body {
 }
 
 .item-line-col::before {
-  content: '';
+  display: none;
+  /* Hide old simple dot */
+}
+
+.timeline-icon-marker {
   position: absolute;
   top: 2rem;
-  width: 14px;
-  height: 14px;
-  background: var(--accent);
+  width: 50px;
+  height: 50px;
+  background: white;
+  border: 4px solid var(--border);
   border-radius: 50%;
-  border: 3px solid var(--bg);
-  box-shadow: 0 0 0 4px var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  color: var(--text);
+  transition: all 0.3s;
+}
+
+.timeline-icon-marker.pulse-now {
+  border-color: #2b8a3e;
+  /* Green to indicate active */
+  box-shadow: 0 0 0 4px rgba(43, 138, 62, 0.15);
+  animation: pulse-ring 2s infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0px rgba(43, 138, 62, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(43, 138, 62, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0px rgba(43, 138, 62, 0);
+  }
+}
+
+.timeline-icon-marker svg {
+  width: 24px;
+  height: 24px;
 }
 
 /* Content column: No Boxes, just typography */
@@ -179,12 +215,17 @@ body {
   border-radius: var(--radius);
   padding: 2.25rem;
   border: 1.5px solid var(--border);
+  transition: all 0.3s;
   /* Slightly thicker but very light border */
   box-shadow: none;
   /* Reduced contrast: remove shadow */
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   cursor: grab;
-  /* Show it's draggable */
+}
+
+.current-active .item-content-col {
+  border-color: #2b8a3e;
+  background: #fdfdfd;
+  box-shadow: 0 10px 30px rgba(43, 138, 62, 0.08);
 }
 
 .item-content-col:active {
@@ -219,30 +260,25 @@ body {
   cursor: grabbing;
 }
 
-.item-header {
+.item-main-layout {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1.5rem;
-}
-
-.item-title-group {
-  display: flex;
-  align-items: center;
   gap: 1.5rem;
 }
 
-.item-icon {
-  color: var(--text-dim);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.item-icon-side {
+  flex-shrink: 0;
 }
 
-.item-icon svg {
-  width: 40px;
-  /* Large icons */
-  height: 40px;
+.item-content-side {
+  flex: 1;
+}
+
+.item-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+  /* Reduced from 1.5rem */
 }
 
 .item-title {
@@ -285,33 +321,51 @@ body {
 .item-time-row {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  font-size: 1rem;
-  font-weight: 600;
+  gap: 0;
+  /* Remove gap to control spacing strictly with divider margins */
+  margin-top: 0.5rem;
+}
+
+.time-val,
+.dist-val,
+.price-val {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+}
+
+.time-val {
   color: var(--text-dim);
 }
 
 .dist-val {
-  background: var(--bg);
-  padding: 0.2rem 0.6rem;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--text);
-  border: 1px solid var(--border);
+  color: var(--text-dim);
 }
 
 .price-val {
-  font-size: 0.9rem;
-  font-weight: 700;
   color: #2b8a3e;
-  /* Keep the green color for contrast */
-  margin-left: 0.5rem;
+  /* Distinctive green for money */
+}
+
+/* Add a subtle vertical line separator between tags */
+.item-time-row span:not(:last-child)::after {
+  content: "";
+  display: inline-block;
+  width: 1px;
+  height: 12px;
+  background: var(--border);
+  margin: 0 0.8rem;
+  /* Tightened margin */
+  vertical-align: middle;
 }
 
 /* Footer Actions */
 .item-footer-actions {
   display: flex;
+  justify-content: flex-end;
+  /* Move buttons to the right */
   gap: 1rem;
   margin-top: 2rem;
   padding-top: 1.5rem;
@@ -349,12 +403,38 @@ body {
 .item-route-box {
   background: #f0f0f0;
   border-radius: 14px;
-  padding: 1rem 1.5rem;
+  padding: 0.8rem 1.25rem;
+  /* Slightly more compact padding */
   display: inline-flex;
   align-items: center;
   gap: 1.5rem;
-  margin: 1.5rem 0;
+  margin: 0.5rem 0 1.25rem 0;
+  /* Tightened top margin, kept some bottom margin for notes */
   border: 1px solid var(--border);
+  transition: all 0.2s;
+}
+
+.clickable-route {
+  cursor: pointer;
+  position: relative;
+  padding-right: 3rem;
+}
+
+.clickable-route:hover {
+  background: #e5e5e5;
+  border-color: #ccc;
+  transform: translateY(-2px);
+}
+
+.maps-link-icon {
+  position: absolute;
+  right: 1.25rem;
+  opacity: 0.3;
+  transition: opacity 0.2s;
+}
+
+.clickable-route:hover .maps-link-icon {
+  opacity: 1;
 }
 
 .route-text {
@@ -437,7 +517,8 @@ body {
   color: var(--text-dim);
   line-height: 1.6;
   margin-top: 1.5rem;
-  font-style: italic;
+  white-space: pre-wrap;
+  /* Reflect line breaks */
 }
 
 /* Footer Add Button */
@@ -664,6 +745,11 @@ body {
   transition: all 0.2s;
 }
 
+textarea.form-input {
+  min-height: 120px;
+  resize: vertical;
+}
+
 .form-input:focus {
   background: white;
   border-color: var(--text);
@@ -696,26 +782,36 @@ body {
 
 .btn-ghost {
   background: transparent;
-  border: none;
+  border: 1px solid var(--border);
+  padding: 0.8rem 2rem;
+  border-radius: 999px;
   font-family: inherit;
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-dim);
   cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-ghost:hover {
+  background: #f8f9fa;
+  border-color: #ddd;
 }
 
 .btn-submit {
-  background: var(--text);
-  color: white;
-  padding: 1rem 2.5rem;
+  background: transparent;
+  color: var(--text);
+  padding: 0.8rem 2.5rem;
   border-radius: 999px;
   font-weight: 800;
   font-size: 1rem;
-  border: none;
+  border: 1.5px solid var(--text);
+  /* Slightly bolder outline for save button */
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: all 0.2s;
 }
 
 .btn-submit:hover {
-  transform: translateY(-2px);
+  background: var(--text);
+  color: white;
 }
