@@ -51,9 +51,9 @@ export const SortableItem: React.FC<SortableItemProps> = ({ item, onDelete, onEd
 
     const mode = ACTIVITY_MODES.find(m => m.type === item.type);
 
-    // Check if this item is currently happening
-    const isCurrent = (() => {
-        if (!currentTime) return false;
+    // Check if this item is currently happening and calculate minutes remaining
+    const currentInfo = (() => {
+        if (!currentTime) return { isCurrent: false, minutesRemaining: 0 };
 
         const toMinutes = (timeStr: string) => {
             const [h, m] = timeStr.split(':').map(Number);
@@ -64,13 +64,15 @@ export const SortableItem: React.FC<SortableItemProps> = ({ item, onDelete, onEd
         const startMinutes = toMinutes(item.startTime);
         let endMinutes = item.endTime ? toMinutes(item.endTime) : startMinutes;
 
-        // If no end time or it's same as start, treat as 30m window for the pulse/badge
         if (endMinutes <= startMinutes) {
             endMinutes = startMinutes + 30;
         }
 
-        return currentMinutes >= startMinutes && currentMinutes < endMinutes;
+        const isCurrent = currentMinutes >= startMinutes && currentMinutes < endMinutes;
+        return { isCurrent, minutesRemaining: endMinutes - currentMinutes };
     })();
+
+    const isCurrent = currentInfo.isCurrent;
 
     const openInGoogleMaps = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -98,6 +100,11 @@ export const SortableItem: React.FC<SortableItemProps> = ({ item, onDelete, onEd
                                 {item.weatherInfo && (
                                     <span className="weather-badge" style={{ fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                         {getWeatherIcon(item.weatherInfo.code)} {item.weatherInfo.temp}°C
+                                    </span>
+                                )}
+                                {isCurrent && (
+                                    <span className="active-timer-badge">
+                                        あと {currentInfo.minutesRemaining}分
                                     </span>
                                 )}
                             </div>
