@@ -730,7 +730,11 @@ body {
 }
 
 .add-btn-container {
-  margin-top: 6rem;
+  position: fixed;
+  bottom: 60px;
+  /* Above the ticker (40px) */
+  right: 2rem;
+  z-index: 900;
   display: flex;
   justify-content: center;
 }
@@ -738,20 +742,29 @@ body {
 .btn-add-minimal {
   background: var(--text);
   color: white;
-  width: 64px;
-  height: 64px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .btn-add-minimal:hover {
   transform: scale(1.1) rotate(90deg);
+  background: var(--accent-light);
+}
+
+@media (max-width: 600px) {
+  .add-btn-container {
+    bottom: 48px;
+    /* Above mobile ticker (32px) */
+    right: 1.25rem;
+  }
 }
 
 /* Total Price Section: Ultra Minimal */
