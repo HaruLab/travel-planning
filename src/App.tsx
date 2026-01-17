@@ -257,11 +257,23 @@ const App: React.FC = () => {
         }
 
         if (lat !== undefined && lon !== undefined) {
-          const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+          const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=sunrise,sunset&timezone=Asia%2FTokyo`);
           const weatherData = await weatherRes.json();
           const { temperature, weathercode } = weatherData.current_weather;
 
-          setItems(prev => prev.map(it => it.id === item.id ? { ...it, weatherInfo: { temp: Math.round(temperature), code: weathercode } } : it));
+          let sunriseTime = undefined;
+          let sunsetTime = undefined;
+
+          if (weatherData.daily && weatherData.daily.sunrise && weatherData.daily.sunrise.length > 0) {
+            const d = new Date(weatherData.daily.sunrise[0]);
+            sunriseTime = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+          }
+          if (weatherData.daily && weatherData.daily.sunset && weatherData.daily.sunset.length > 0) {
+            const d = new Date(weatherData.daily.sunset[0]);
+            sunsetTime = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+          }
+
+          setItems(prev => prev.map(it => it.id === item.id ? { ...it, weatherInfo: { temp: Math.round(temperature), code: weathercode, sunrise: sunriseTime, sunset: sunsetTime } } : it));
         }
       } catch (e) {
         console.error("Weather fetch failed", e);

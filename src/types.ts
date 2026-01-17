@@ -14,5 +14,5 @@ export interface TravelItem {
     note?: string;
     price?: number;
     todos?: { id: string; text: string; completed: boolean }[];
-    weatherInfo?: { temp: number; code: number };
+    weatherInfo?: { temp: number; code: number; sunrise?: string; sunset?: string };
 }

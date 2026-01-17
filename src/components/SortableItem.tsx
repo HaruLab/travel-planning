@@ -1,7 +1,7 @@
 import React, { useState, useEffect, memo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, MapPin, ExternalLink, Pen, Trash, Link, ChevronDown, ChevronUp, Sun, Cloud, CloudRain, Snowflake, CloudLightning, CloudFog, CloudDrizzle, Thermometer } from 'lucide-react';
+import { GripVertical, MapPin, ExternalLink, Pen, Trash, Link, ChevronDown, ChevronUp, Sun, Cloud, CloudRain, Snowflake, CloudLightning, CloudFog, CloudDrizzle, Thermometer, Sunrise, Sunset } from 'lucide-react';
 import type { TravelItem } from '../types';
 import { ACTIVITY_MODES, getActivityIcon } from '../constants';
 import { CheckSquare, Square } from 'lucide-react';
@@ -131,6 +131,16 @@ export const SortableItem: React.FC<SortableItemProps> = ({ item, onDelete, onEd
                                 {item.weatherInfo && (
                                     <span className="weather-badge" style={{ fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                         {getWeatherIcon(item.weatherInfo.code)} {item.weatherInfo.temp}°C
+                                        {item.weatherInfo.sunrise && (
+                                            <span title="日の出" style={{ display: 'flex', alignItems: 'center', marginLeft: '6px', gap: '2px', opacity: 0.8 }}>
+                                                <Sunrise size={14} /> {item.weatherInfo.sunrise}
+                                            </span>
+                                        )}
+                                        {item.weatherInfo.sunset && (
+                                            <span title="日没" style={{ display: 'flex', alignItems: 'center', marginLeft: '4px', gap: '2px', opacity: 0.8 }}>
+                                                <Sunset size={14} /> {item.weatherInfo.sunset}
+                                            </span>
+                                        )}
                                     </span>
                                 )}
                             </div>

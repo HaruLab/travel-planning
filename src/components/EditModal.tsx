@@ -74,8 +74,15 @@ export const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, editingIt
             mapEmbedCode: finalMapEmbedCode,
             note: formState.note,
             price: formState.price ? Number(formState.price) : undefined,
-            todos: formState.todos || []
+            todos: formState.todos || [],
+            weatherInfo: editingItem?.weatherInfo
         };
+
+        // If crucial fields changed, clear weatherInfo to allow re-fetching
+        if (editingItem && (editingItem.from !== newItem.from || editingItem.title !== newItem.title)) {
+            newItem.weatherInfo = undefined;
+        }
+
         onSave(newItem);
     };
 
