@@ -12,10 +12,7 @@ import {
   Download,
   Upload,
   Database,
-  Play,
-  ArrowRight,
-  Clock,
-  Navigation
+  Clock
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -409,7 +406,7 @@ const App: React.FC = () => {
                           return nowTotalSeconds >= s && nowTotalSeconds < e;
                         });
 
-                        const next = items.find(it => toMinutes(it.startTime) * 60 > nowTotalSeconds);
+
 
                         return (
                           <div className="status-single-container">
