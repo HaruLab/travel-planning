@@ -1548,12 +1548,12 @@ textarea.form-input {
   align-items: center;
   background: #ebfbee;
   color: #2b8a3e;
-  padding: 2px 8px;
+  padding: 1px 8px;
   border-radius: 12px;
   font-size: 0.75rem;
   font-weight: 500;
   border: 1px solid rgba(43, 138, 62, 0.2);
   line-height: 1;
   white-space: nowrap;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
