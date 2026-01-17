@@ -1504,3 +1504,23 @@ textarea.form-input {
   background: white;
   box-shadow: 0 0 0 2px var(--text);
 }
+
+/* Data Management */
+.data-management {
+  display: flex;
+  flex-direction: column;
+}
+
+.data-management .footer-action-btn {
+  justify-content: center;
+  gap: 0.75rem;
+  border: 1px solid var(--border-light);
+  background: white;
+  min-height: 60px;
+  font-weight: 600;
+}
+
+.data-management .footer-action-btn:hover {
+  background: var(--surface-dim);
+  border-color: var(--text);
+}

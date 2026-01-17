@@ -8,7 +8,10 @@ import {
   Flag,
   Eye,
   EyeOff,
-  X
+  X,
+  Download,
+  Upload,
+  Database
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -38,7 +41,9 @@ const App: React.FC = () => {
     tripTitle,
     setTripTitle,
     items,
-    setItems
+    setItems,
+    exportData,
+    importData
   } = useItinerary();
 
   const [currentTime, setCurrentTime] = useState(() => {
@@ -49,7 +54,7 @@ const App: React.FC = () => {
   const [totalTimeRemaining, setTotalTimeRemaining] = useState<string | null>(null);
   const [showFinished, setShowFinished] = useState(true);
   const [isCompactMode, setIsCompactMode] = useState(false);
-  const [activeDetail, setActiveDetail] = useState<'price' | 'countdown' | 'total' | null>(null);
+  const [activeDetail, setActiveDetail] = useState<'price' | 'countdown' | 'total' | 'data' | null>(null);
 
   React.useEffect(() => {
     const toMin = (t: string) => {
@@ -294,6 +299,16 @@ const App: React.FC = () => {
               </button>
             )}
 
+            <button
+              className={`info-pill ${activeDetail === 'data' ? 'active' : ''}`}
+              title="データの保存・読み込み"
+              onClick={() => setActiveDetail(activeDetail === 'data' ? null : 'data')}
+              style={{ cursor: 'pointer', border: 'none' }}
+            >
+              <Database size={16} />
+              <span className="price-display" style={{ fontSize: '0.9rem', fontWeight: 500 }}>データ</span>
+            </button>
+
           </div>
         </div>
 
@@ -311,6 +326,7 @@ const App: React.FC = () => {
                     {activeDetail === 'price' && '支出内訳'}
                     {activeDetail === 'countdown' && '現在の状況'}
                     {activeDetail === 'total' && '全体スケジュール'}
+                    {activeDetail === 'data' && 'データのバックアップ'}
                   </span>
                   <button className="detail-close-btn" onClick={() => setActiveDetail(null)}>
                     <X size={18} />
@@ -318,6 +334,33 @@ const App: React.FC = () => {
                 </div>
 
                 <div className="detail-body">
+                  {activeDetail === 'data' && (
+                    <div className="data-management">
+                      <p style={{ fontSize: '0.85rem', opacity: 0.6, marginBottom: '1rem' }}>
+                        旅行データをJSONファイルとして保存したり、以前のファイルから読み込んだりできます。
+                      </p>
+                      <div style={{ display: 'flex', gap: '1rem' }}>
+                        <button className="footer-action-btn" onClick={exportData} style={{ flex: 1, padding: '1rem' }}>
+                          <Download size={18} />
+                          <span>保存 (Export)</span>
+                        </button>
+                        <label className="footer-action-btn" style={{ flex: 1, padding: '1rem', cursor: 'pointer' }}>
+                          <Upload size={18} />
+                          <span>読込 (Import)</span>
+                          <input
+                            type="file"
+                            accept=".json"
+                            style={{ display: 'none' }}
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) importData(file);
+                            }}
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  )}
+
                   {activeDetail === 'price' && (
                     <div className="price-breakdown">
                       {items.filter(it => (it.price || 0) > 0).map(it => (
