@@ -92,7 +92,14 @@ export const SortableItem: React.FC<SortableItemProps> = ({ item, onDelete, onEd
                 <div className="item-content-side">
                     <div className="item-header-row" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
                         <div className="title-time-stack" style={{ flex: 1, paddingRight: '1rem' }}>
-                            <h3 className="item-title" style={{ lineHeight: 1.2, marginBottom: '0.25rem' }}>{item.title}</h3>
+                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap', marginBottom: '0.25rem' }}>
+                                <h3 className="item-title" style={{ margin: 0 }}>{item.title}</h3>
+                                {isCurrent && (
+                                    <span className="active-timer-badge">
+                                        あと {currentInfo.minutesRemaining}分
+                                    </span>
+                                )}
+                            </div>
                             <div className="item-time-row">
                                 <span className="time-val">{item.startTime}—{item.endTime}</span>
                                 {item.distance && <span className="dist-val">{item.distance}</span>}
@@ -100,11 +107,6 @@ export const SortableItem: React.FC<SortableItemProps> = ({ item, onDelete, onEd
                                 {item.weatherInfo && (
                                     <span className="weather-badge" style={{ fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                         {getWeatherIcon(item.weatherInfo.code)} {item.weatherInfo.temp}°C
-                                    </span>
-                                )}
-                                {isCurrent && (
-                                    <span className="active-timer-badge">
-                                        あと {currentInfo.minutesRemaining}分
                                     </span>
                                 )}
                             </div>
