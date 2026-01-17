@@ -975,18 +975,26 @@ textarea.form-input {
 
   /* Modal Mobile Adjustments */
   .modal-overlay {
-    padding: 1rem;
-    /* Reduce padding to give more room */
+    padding: 0;
+    /* Full width/height for bottom sheet */
     align-items: flex-end;
-    /* Bottom sheet feeling on mobile? Or center is fine */
+    /* Stick to bottom */
   }
 
   .modal-card {
-    padding: 1.25rem;
-    border-radius: 20px;
-    max-height: 85vh;
+    padding: 1.5rem;
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom) + 1rem);
+    /* Safe area for iPhone home bar */
+    border-radius: 24px 24px 0 0;
+    /* Top corners only */
+    max-height: 85dvh;
+    /* Dynamic viewport height to account for address bar */
     width: 100%;
     margin: 0;
+    overflow-y: auto;
+    /* Ensure scrollable */
+    overscroll-behavior: contain;
+    /* Prevent background scrolling */
   }
 
   .category-grid {
