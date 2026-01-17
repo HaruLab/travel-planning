@@ -52,7 +52,25 @@ export const SortableItem: React.FC<SortableItemProps> = ({ item, onDelete, onEd
     const mode = ACTIVITY_MODES.find(m => m.type === item.type);
 
     // Check if this item is currently happening
-    const isCurrent = currentTime >= item.startTime && currentTime <= item.endTime;
+    const isCurrent = (() => {
+        if (!currentTime) return false;
+
+        const toMinutes = (timeStr: string) => {
+            const [h, m] = timeStr.split(':').map(Number);
+            return h * 60 + m;
+        };
+
+        const currentMinutes = toMinutes(currentTime);
+        const startMinutes = toMinutes(item.startTime);
+        let endMinutes = item.endTime ? toMinutes(item.endTime) : startMinutes;
+
+        // If no end time or it's same as start, treat as 30m window for the pulse/badge
+        if (endMinutes <= startMinutes) {
+            endMinutes = startMinutes + 30;
+        }
+
+        return currentMinutes >= startMinutes && currentMinutes < endMinutes;
+    })();
 
     const openInGoogleMaps = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -168,16 +186,23 @@ export const SortableItem: React.FC<SortableItemProps> = ({ item, onDelete, onEd
                             </div>
 
                             {item.mapEmbedCode && (
-                                <div className="map-embed-container" style={{ marginTop: '1.5rem', borderRadius: '12px', overflow: 'hidden', border: '1px solid #eee' }}>
-                                    <iframe
-                                        src={item.mapEmbedCode.match(/src="([^"]+)"/)?.[1] || ''}
-                                        width="100%"
-                                        height="600"
-                                        style={{ border: 0, display: 'block' }}
-                                        allowFullScreen
-                                        loading="lazy"
-                                        referrerPolicy="no-referrer-when-downgrade"
-                                    />
+                                <div className="map-embed-container" style={{ marginTop: '1.5rem', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-light)', background: '#f8f9fa' }}>
+                                    {item.mapEmbedCode.includes('<iframe') ? (
+                                        <div
+                                            dangerouslySetInnerHTML={{ __html: item.mapEmbedCode }}
+                                            style={{ width: '100%', height: '400px', display: 'block' }}
+                                        />
+                                    ) : (
+                                        <iframe
+                                            src={item.mapEmbedCode}
+                                            width="100%"
+                                            height="400"
+                                            style={{ border: 0, display: 'block' }}
+                                            allowFullScreen
+                                            loading="lazy"
+                                            referrerPolicy="no-referrer-when-downgrade"
+                                        />
+                                    )}
                                 </div>
                             )}
                         </div>

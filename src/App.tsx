@@ -74,13 +74,24 @@ const App: React.FC = () => {
       const nowTotalSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + s;
       const currentItem = items.find(item => {
         const start = toMin(item.startTime) * 60;
-        const end = toMin(item.endTime || item.startTime) * 60;
+        let endStr = item.endTime || item.startTime;
+        let end = toMin(endStr) * 60;
+
+        // If no end time or it's same as start, treat it as 30 min event for "Now" status
+        if (end <= start) {
+          end = start + 30 * 60;
+        }
+
         return nowTotalSeconds >= start && nowTotalSeconds < end;
       });
 
       if (currentItem) {
-        const endTotalSeconds = toMin(currentItem.endTime || currentItem.startTime) * 60;
-        const diff = endTotalSeconds - nowTotalSeconds;
+        const start = toMin(currentItem.startTime) * 60;
+        let endStr = currentItem.endTime || currentItem.startTime;
+        let end = toMin(endStr) * 60;
+        if (end <= start) end = start + 30 * 60;
+
+        const diff = end - nowTotalSeconds;
         const min = Math.floor(diff / 60);
         setTimeRemaining(`${min}分`);
       } else {
