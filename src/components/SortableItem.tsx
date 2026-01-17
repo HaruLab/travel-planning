@@ -91,7 +91,9 @@ export const SortableItem: React.FC<SortableItemProps> = ({ item, onDelete, onEd
         }
 
         const isCurrent = currentMinutes >= startMinutes && currentMinutes < endMinutes;
-        return { isCurrent, minutesRemaining: endMinutes - currentMinutes };
+        const minutesRemaining = endMinutes - currentMinutes;
+        const isWarning = isCurrent && minutesRemaining <= 10;
+        return { isCurrent, minutesRemaining, isWarning };
     })();
 
     const isCurrent = currentInfo.isCurrent;
@@ -117,7 +119,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({ item, onDelete, onEd
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '0.25rem' }}>
                                 <h3 className="item-title" style={{ margin: 0 }}>{item.title}</h3>
                                 {isCurrent && (
-                                    <span className="active-timer-badge">
+                                    <span className={`active-timer-badge ${currentInfo.isWarning ? 'warning' : ''}`}>
                                         あと {currentInfo.minutesRemaining}分
                                     </span>
                                 )}

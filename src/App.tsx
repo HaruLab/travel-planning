@@ -56,6 +56,7 @@ const App: React.FC = () => {
   const [showFinished, setShowFinished] = useState(true);
   const [isCompactMode, setIsCompactMode] = useState(false);
   const [activeDetail, setActiveDetail] = useState<'price' | 'countdown' | 'total' | 'data' | null>(null);
+  const [isWarning, setIsWarning] = useState(false);
 
   React.useEffect(() => {
     const toMin = (t: string) => {
@@ -99,6 +100,24 @@ const App: React.FC = () => {
       } else {
         setTimeRemaining(null);
       }
+
+      // Final Warning state calculation
+      let warning = false;
+      if (currentItem) {
+        const start = toMin(currentItem.startTime) * 60;
+        let endStr = currentItem.endTime || currentItem.startTime;
+        let end = toMin(endStr) * 60;
+        if (end <= start) end = start + 30 * 60;
+        const diff = end - nowTotalSeconds;
+        if (diff < 600) warning = true; // 10 minutes
+      } else {
+        const nextItem = items.find(it => toMin(it.startTime) * 60 > nowTotalSeconds);
+        if (nextItem) {
+          const start = toMin(nextItem.startTime) * 60;
+          if (start - nowTotalSeconds < 600) warning = true;
+        }
+      }
+      setIsWarning(warning);
 
       // Calculate total time until the last item ends
       if (items.length > 0) {
@@ -412,8 +431,8 @@ const App: React.FC = () => {
                         return (
                           <div className="status-single-container">
                             {current ? (
-                              <div className="status-hero-card">
-                                <div className="hero-status-label">CURRENT ACTIVITY</div>
+                              <div className={`status-hero-card ${isWarning ? 'warning-pulse' : ''}`}>
+                                <div className="hero-status-label">{isWarning ? 'ENDING SOON' : 'CURRENT ACTIVITY'}</div>
                                 <h4 className="hero-title">{current.title}</h4>
                                 <div className="hero-time-row">
                                   <Clock size={14} />
@@ -428,13 +447,30 @@ const App: React.FC = () => {
                                     return <div className="hero-progress-fill" style={{ width: `${progress}%` }} />;
                                   })()}
                                 </div>
-                                <div className="hero-remaining-badge">
+                                <div className={`hero-remaining-badge ${isWarning ? 'warning' : ''}`}>
                                   あと {timeRemaining}
                                 </div>
                               </div>
                             ) : (
-                              <div className="status-hero-card empty">
-                                <p>現在は予定がありません</p>
+                              <div className={`status-hero-card ${isWarning ? 'warning-pulse' : 'empty'}`}>
+                                {isWarning ? (
+                                  <>
+                                    <div className="hero-status-label">UPCOMING SOON</div>
+                                    {(() => {
+                                      const next = items.find(it => toMinutes(it.startTime) * 60 > nowTotalSeconds);
+                                      return next ? (
+                                        <>
+                                          <h4 className="hero-title">{next.title}</h4>
+                                          <p className="hero-time-row" style={{ marginTop: '0.25rem' }}>
+                                            まもなく {next.startTime} から開始
+                                          </p>
+                                        </>
+                                      ) : null;
+                                    })()}
+                                  </>
+                                ) : (
+                                  <p>現在は予定がありません</p>
+                                )}
                               </div>
                             )}
                           </div>
