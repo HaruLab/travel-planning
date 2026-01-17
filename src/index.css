@@ -1686,6 +1686,13 @@ textarea.form-input {
   box-shadow: 0 0 0 2px var(--text);
 }
 
+.info-pill.warning {
+  background: #fffbeb !important;
+  color: #d97706 !important;
+  box-shadow: 0 0 0 2px #f59e0b !important;
+  animation: warning-mini-pulse 2s infinite ease-in-out;
+}
+
 /* Data Management */
 .data-management {
   display: flex;

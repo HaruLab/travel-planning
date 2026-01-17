@@ -309,7 +309,7 @@ const App: React.FC = () => {
 
             {timeRemaining && (
               <button
-                className={`info-pill countdown-pill ${activeDetail === 'countdown' ? 'active' : ''}`}
+                className={`info-pill countdown-pill ${activeDetail === 'countdown' ? 'active' : ''} ${isWarning ? 'warning' : ''}`}
                 title="現在の状況詳細"
                 onClick={() => setActiveDetail(activeDetail === 'countdown' ? null : 'countdown')}
                 style={{ cursor: 'pointer', border: 'none' }}
