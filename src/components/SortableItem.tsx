@@ -92,7 +92,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({ item, onDelete, onEd
                 <div className="item-content-side">
                     <div className="item-header-row" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
                         <div className="title-time-stack" style={{ flex: 1, paddingRight: '1rem' }}>
-                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap', marginBottom: '0.25rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '0.25rem' }}>
                                 <h3 className="item-title" style={{ margin: 0 }}>{item.title}</h3>
                                 {isCurrent && (
                                     <span className="active-timer-badge">

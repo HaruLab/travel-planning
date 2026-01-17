@@ -1555,4 +1555,5 @@ textarea.form-input {
   border: 1px solid rgba(43, 138, 62, 0.2);
   line-height: 1;
   white-space: nowrap;
+  transform: translateY(-1px);
 }
