@@ -1508,9 +1508,9 @@ textarea.form-input {
 
 .hero-progress-track {
   width: 100%;
-  height: 6px;
+  height: 12px;
   background: rgba(0, 0, 0, 0.05);
-  border-radius: 3px;
+  border-radius: 6px;
   overflow: hidden;
   margin: 0.5rem 0;
 }
@@ -1518,7 +1518,7 @@ textarea.form-input {
 .hero-progress-fill {
   height: 100%;
   background: var(--text);
-  border-radius: 3px;
+  border-radius: 6px;
   transition: width 1s linear;
 }
 
@@ -1574,16 +1574,16 @@ textarea.form-input {
 
 .time-progress-track {
   width: 100%;
-  height: 4px;
+  height: 10px;
   background: rgba(0, 0, 0, 0.05);
-  border-radius: 2px;
+  border-radius: 5px;
   overflow: hidden;
 }
 
 .time-progress-fill {
   height: 100%;
   background: var(--text);
-  border-radius: 2px;
+  border-radius: 5px;
 }
 
 .trip-stats-grid {

@@ -94,7 +94,8 @@ const App: React.FC = () => {
 
         const diff = end - nowTotalSeconds;
         const min = Math.floor(diff / 60);
-        setTimeRemaining(`${min}分`);
+        const sec = diff % 60;
+        setTimeRemaining(`${min}:${String(sec).padStart(2, '0')}`);
       } else {
         setTimeRemaining(null);
       }
@@ -107,14 +108,14 @@ const App: React.FC = () => {
 
         if (nowTotalSeconds < tripEndSeconds) {
           const totalDiffSeconds = tripEndSeconds - nowTotalSeconds;
-          const totalMin = Math.floor(totalDiffSeconds / 60);
+          const h = Math.floor(totalDiffSeconds / 3600);
+          const m = Math.floor((totalDiffSeconds % 3600) / 60);
+          const s = totalDiffSeconds % 60;
 
-          if (totalMin >= 60) {
-            const h = Math.floor(totalMin / 60);
-            const m = totalMin % 60;
-            setTotalTimeRemaining(`${h}h ${m}m`);
+          if (h > 0) {
+            setTotalTimeRemaining(`${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`);
           } else {
-            setTotalTimeRemaining(`${totalMin}分`);
+            setTotalTimeRemaining(`${m}:${String(s).padStart(2, '0')}`);
           }
         } else {
           setTotalTimeRemaining(null);
@@ -476,7 +477,7 @@ const App: React.FC = () => {
                         <div className="trip-stats-grid">
                           <div className="stat-item highlight">
                             <span className="stat-label">旅行終了まで</span>
-                            <span className="stat-value">あと {totalTimeRemaining || '0分'}</span>
+                            <span className="stat-value">あと {totalTimeRemaining || '0:00'}</span>
                           </div>
                           {(() => {
                             const toMin = (t: string) => {
