@@ -1594,47 +1594,45 @@ textarea.form-input {
 }
 
 .time-point .time {
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 700;
-  color: var(--text);
-}
-
-.time-point .location {
-  font-size: 0.75rem;
   color: var(--text-dim);
-  max-width: 120px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .time-progress-track {
   width: 100%;
-  height: 6px;
+  height: 4px;
   background: rgba(0, 0, 0, 0.05);
-  border-radius: 3px;
+  border-radius: 2px;
   overflow: hidden;
 }
 
 .time-progress-fill {
   height: 100%;
   background: var(--text);
-  /* Solid dark bar for flat look */
-  border-radius: 3px;
+  border-radius: 2px;
 }
 
 .trip-stats-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  padding-top: 1.25rem;
+  padding-top: 1.5rem;
   border-top: 1px solid var(--border-light);
 }
 
 .stat-item {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.4rem;
+}
+
+.stat-item:first-child {
+  padding-right: 1.5rem;
+  border-right: 1px solid var(--border-light);
+}
+
+.stat-item:last-child {
+  padding-left: 1.5rem;
 }
 
 .stat-label {
@@ -1646,13 +1644,14 @@ textarea.form-input {
 }
 
 .stat-value {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 600;
   color: var(--text);
 }
 
 .stat-item.highlight .stat-value {
-  color: var(--accent-light);
+  color: #2b8a3e;
+  /* Match the active green for consistency */
 }
 
 .info-pill.active {

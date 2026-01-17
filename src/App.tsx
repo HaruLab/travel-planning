@@ -477,11 +477,9 @@ const App: React.FC = () => {
                           <div className="time-labels">
                             <div className="time-point start">
                               <span className="time">{items[0]?.startTime}</span>
-                              <span className="location">{items[0]?.title}</span>
                             </div>
                             <div className="time-point end">
                               <span className="time">{items[items.length - 1]?.endTime || items[items.length - 1]?.startTime}</span>
-                              <span className="location">{items[items.length - 1]?.title}</span>
                             </div>
                           </div>
                           <div className="time-progress-track">
