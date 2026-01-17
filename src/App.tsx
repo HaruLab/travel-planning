@@ -342,11 +342,11 @@ const App: React.FC = () => {
                       <div style={{ display: 'flex', gap: '1rem' }}>
                         <button className="footer-action-btn" onClick={exportData} style={{ flex: 1, padding: '1rem' }}>
                           <Download size={18} />
-                          <span>保存 (Export)</span>
+                          <span>データを保存</span>
                         </button>
                         <label className="footer-action-btn" style={{ flex: 1, padding: '1rem', cursor: 'pointer' }}>
                           <Upload size={18} />
-                          <span>読込 (Import)</span>
+                          <span>データを読み込む</span>
                           <input
                             type="file"
                             accept=".json"
