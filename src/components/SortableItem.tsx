@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, MapPin, ExternalLink, Pen, Trash, Link, ChevronDown, ChevronUp, Sun, Cloud, CloudRain, Snowflake, CloudLightning, CloudFog, CloudDrizzle, Thermometer } from 'lucide-react';
@@ -16,6 +16,28 @@ const getWeatherIcon = (code: number) => {
     if (code <= 99) return <CloudLightning size={16} color="#6366f1" />;
     return <Thermometer size={16} color="#94a3b8" />;
 };
+
+const MapDisplay = memo(({ embedCode }: { embedCode: string }) => {
+    if (!embedCode) return null;
+    return (
+        <div className="map-embed-container" style={{ marginTop: '1.5rem', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-light)', background: '#f8f9fa' }}>
+            {embedCode.includes('<iframe') ? (
+                <div
+                    dangerouslySetInnerHTML={{ __html: embedCode }}
+                    style={{ display: 'block' }}
+                />
+            ) : (
+                <iframe
+                    src={embedCode}
+                    style={{ border: 0, display: 'block' }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                />
+            )}
+        </div>
+    );
+});
 
 interface SortableItemProps {
     item: TravelItem;
@@ -194,24 +216,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({ item, onDelete, onEd
                                 </button>
                             </div>
 
-                            {item.mapEmbedCode && (
-                                <div className="map-embed-container" style={{ marginTop: '1.5rem', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-light)', background: '#f8f9fa' }}>
-                                    {item.mapEmbedCode.includes('<iframe') ? (
-                                        <div
-                                            dangerouslySetInnerHTML={{ __html: item.mapEmbedCode }}
-                                            style={{ display: 'block' }}
-                                        />
-                                    ) : (
-                                        <iframe
-                                            src={item.mapEmbedCode}
-                                            style={{ border: 0, display: 'block' }}
-                                            allowFullScreen
-                                            loading="lazy"
-                                            referrerPolicy="no-referrer-when-downgrade"
-                                        />
-                                    )}
-                                </div>
-                            )}
+                            {item.mapEmbedCode && <MapDisplay embedCode={item.mapEmbedCode} />}
                         </div>
                     )}
                 </div>
