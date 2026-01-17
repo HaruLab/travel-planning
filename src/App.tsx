@@ -11,7 +11,11 @@ import {
   X,
   Download,
   Upload,
-  Database
+  Database,
+  Play,
+  ArrowRight,
+  Clock,
+  Navigation
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -388,78 +392,141 @@ const App: React.FC = () => {
                   )}
 
                   {activeDetail === 'countdown' && (
-                    <div className="countdown-info">
+                    <div className="countdown-info-enhanced">
                       {(() => {
                         const now = new Date();
-                        const currentToMin = (t: string) => {
+                        const toMinutes = (t: string) => {
                           const [h, m] = t.split(':').map(Number);
                           return h * 60 + m;
                         };
                         const nowTotalSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
 
                         const current = items.find(it => {
-                          const s = currentToMin(it.startTime) * 60;
-                          const e = currentToMin(it.endTime || it.startTime) * 60;
+                          const s = toMinutes(it.startTime) * 60;
+                          let eStr = it.endTime || it.startTime;
+                          let e = toMinutes(eStr) * 60;
+                          if (e <= s) e = s + 30 * 60;
                           return nowTotalSeconds >= s && nowTotalSeconds < e;
                         });
 
-                        const next = items.find(it => currentToMin(it.startTime) * 60 > nowTotalSeconds);
+                        const next = items.find(it => toMinutes(it.startTime) * 60 > nowTotalSeconds);
 
                         return (
-                          <>
-                            {current ? (
-                              <div className="status-segment">
-                                <p className="label">進行中:</p>
-                                <p className="value">{current.title}</p>
-                                <p className="sub">あと {timeRemaining} で終了</p>
+                          <div className="status-grid">
+                            <div className={`status-card ${current ? 'active' : 'idle'}`}>
+                              <div className="card-header">
+                                <Play size={14} className="icon" />
+                                <span>NOW</span>
                               </div>
-                            ) : (
-                              <div className="status-segment">
-                                <p className="label">現在の予定なし</p>
-                              </div>
-                            )}
+                              {current ? (
+                                <div className="card-content">
+                                  <h4 className="title">{current.title}</h4>
+                                  <div className="time-info">
+                                    <Clock size={12} />
+                                    <span>{current.startTime} — {current.endTime || `${current.startTime}(+30m)`}</span>
+                                  </div>
+                                  <div className="status-progress-container">
+                                    {(() => {
+                                      const s = toMinutes(current.startTime) * 60;
+                                      let e = toMinutes(current.endTime || current.startTime) * 60;
+                                      if (e <= s) e = s + 30 * 60;
+                                      const progress = Math.min(100, Math.max(0, ((nowTotalSeconds - s) / (e - s)) * 100));
+                                      return (
+                                        <div className="status-progress-bar" style={{ width: `${progress}%` }} />
+                                      );
+                                    })()}
+                                  </div>
+                                  <p className="remaining-text">あと {timeRemaining}</p>
+                                </div>
+                              ) : (
+                                <div className="card-content empty">
+                                  <p>現在は予定がありません</p>
+                                </div>
+                              )}
+                            </div>
+
                             {next && (
-                              <div className="status-segment">
-                                <p className="label">次の予定:</p>
-                                <p className="value">{next.title} ({next.startTime}~)</p>
+                              <div className="status-card next">
+                                <div className="card-header">
+                                  <ArrowRight size={14} className="icon" />
+                                  <span>NEXT</span>
+                                </div>
+                                <div className="card-content">
+                                  <h4 className="title">{next.title}</h4>
+                                  <div className="time-info">
+                                    <Clock size={12} />
+                                    <span>{next.startTime} から開始</span>
+                                  </div>
+                                  <div className="location-info">
+                                    <Navigation size={12} />
+                                    <span>{next.from}</span>
+                                  </div>
+                                </div>
                               </div>
                             )}
-                          </>
+                          </div>
                         );
                       })()}
                     </div>
                   )}
 
                   {activeDetail === 'total' && (
-                    <div className="total-schedule">
-                      <div className="schedule-row">
-                        <span className="label">開始</span>
-                        <span className="value">{items[0]?.startTime} ({items[0]?.title})</span>
-                      </div>
-                      <div className="schedule-row">
-                        <span className="label">終了</span>
-                        <span className="value">{items[items.length - 1]?.endTime || items[items.length - 1]?.startTime} ({items[items.length - 1]?.title})</span>
-                      </div>
-                      <div className="schedule-row">
-                        <span className="label">旅行終了まで</span>
-                        <span className="value" style={{ color: 'var(--accent-light)', fontWeight: 600 }}>あと約 {totalTimeRemaining || '0分'}</span>
-                      </div>
-                      {(() => {
-                        const toMin = (t: string) => {
-                          const [h, m] = t.split(':').map(Number);
-                          return h * 60 + m;
-                        };
-                        const start = toMin(items[0]?.startTime || '00:00');
-                        const end = toMin(items[items.length - 1]?.endTime || items[items.length - 1]?.startTime || '00:00');
-                        const diff = end - start;
-                        const h = Math.floor(diff / 60);
-                        const m = diff % 60;
-                        return (
-                          <div className="schedule-row" style={{ marginTop: '0.5rem', opacity: 0.6, fontSize: '0.85rem' }}>
-                            <span className="label">（総所要時間: {h > 0 ? `${h}h ${m}m` : `${m}分`}）</span>
+                    <div className="total-schedule-enhanced">
+                      <div className="trip-summary-box">
+                        <div className="trip-time-line">
+                          <div className="time-point start">
+                            <span className="time">{items[0]?.startTime}</span>
+                            <span className="point-label">START</span>
+                            <span className="location">{items[0]?.title}</span>
                           </div>
-                        );
-                      })()}
+                          <div className="time-progress-track">
+                            {(() => {
+                              const now = new Date();
+                              const nowMin = now.getHours() * 60 + now.getMinutes();
+                              const toMin = (t: string) => {
+                                const [h, m] = t.split(':').map(Number);
+                                return h * 60 + m;
+                              };
+                              const start = toMin(items[0]?.startTime || '00:00');
+                              const lastItem = items[items.length - 1];
+                              const end = toMin(lastItem?.endTime || lastItem?.startTime || '23:59');
+                              const total = end - start;
+                              if (total <= 0) return null;
+                              const progress = Math.min(100, Math.max(0, ((nowMin - start) / total) * 100));
+                              return <div className="time-progress-fill" style={{ width: `${progress}%` }} />;
+                            })()}
+                          </div>
+                          <div className="time-point end">
+                            <span className="time">{items[items.length - 1]?.endTime || items[items.length - 1]?.startTime}</span>
+                            <span className="point-label">GOAL</span>
+                            <span className="location">{items[items.length - 1]?.title}</span>
+                          </div>
+                        </div>
+
+                        <div className="trip-stats-grid">
+                          <div className="stat-item highlight">
+                            <span className="stat-label">旅行終了まで</span>
+                            <span className="stat-value">あと {totalTimeRemaining || '0分'}</span>
+                          </div>
+                          {(() => {
+                            const toMin = (t: string) => {
+                              const [h, m] = t.split(':').map(Number);
+                              return h * 60 + m;
+                            };
+                            const start = toMin(items[0]?.startTime || '00:00');
+                            const end = toMin(items[items.length - 1]?.endTime || items[items.length - 1]?.startTime || '00:00');
+                            const diff = end - start;
+                            const h = Math.floor(diff / 60);
+                            const m = diff % 60;
+                            return (
+                              <div className="stat-item">
+                                <span className="stat-label">総所要時間</span>
+                                <span className="stat-value">{h > 0 ? `${h}時間 ${m}分` : `${m}分`}</span>
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>

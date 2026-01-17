@@ -1460,49 +1460,198 @@ textarea.form-input {
   gap: 1.25rem;
 }
 
-.status-segment {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.status-segment .label {
-  font-size: 0.85rem;
-  opacity: 0.5;
-}
-
-.status-segment .value {
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.status-segment .sub {
-  font-size: 0.9rem;
-  color: var(--accent-light);
-  font-weight: 500;
-}
-
-/* Total Schedule */
-.total-schedule {
-  display: flex;
-  flex-direction: column;
+/* Optimized Status Cards */
+.status-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 1rem;
 }
 
-.schedule-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+@media (max-width: 600px) {
+  .status-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
-.schedule-row .label {
-  font-size: 0.9rem;
+.status-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.25rem;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.status-card.active {
+  border-left: 4px solid var(--accent-light);
+}
+
+.status-card.next {
+  background: var(--surface);
+  border-style: dashed;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
+}
+
+.card-header .icon {
   opacity: 0.6;
 }
 
-.schedule-row .value {
-  font-size: 1rem;
-  font-weight: 500;
+.status-card.active .card-header {
+  color: var(--accent-light);
+}
+
+.status-card .title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.time-info,
+.location-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.status-progress-container {
+  height: 6px;
+  background: #f1f3f5;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 0.4rem;
+}
+
+.status-progress-bar {
+  height: 100%;
+  background: var(--accent-light);
+  border-radius: 3px;
+  transition: width 1s linear;
+}
+
+.remaining-text {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent-light);
+  margin: 0;
+}
+
+.card-content.empty {
+  padding: 1rem 0;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+
+/* Optimized Total Schedule */
+.trip-summary-box {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.trip-time-line {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.time-point {
+  display: flex;
+  flex-direction: column;
+  min-width: 70px;
+}
+
+.time-point.start {
+  align-items: flex-start;
+}
+
+.time-point.end {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.time-point .time {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+}
+
+.time-point .point-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  margin: 0.4rem 0;
+}
+
+.time-point .location {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.time-progress-track {
+  flex: 1;
+  height: 8px;
+  background: #f1f3f5;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.time-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-light), #3b82f6);
+  border-radius: 4px;
+}
+
+.trip-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.stat-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.stat-item.highlight .stat-value {
+  color: var(--accent-light);
 }
 
 .info-pill.active {
