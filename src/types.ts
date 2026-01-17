@@ -9,6 +9,10 @@ export interface TravelItem {
     startTime: string;
     endTime: string;
     distance?: string;
+    urls?: string[];
+    mapEmbedCode?: string;
     note?: string;
     price?: number;
+    todos?: { id: string; text: string; completed: boolean }[];
+    weatherInfo?: { temp: number; code: number };
 }

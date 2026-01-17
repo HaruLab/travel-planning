@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import {
   Plus,
-  CalendarDays,
-  CloudCheck,
-  RotateCw,
-  CloudOff
+  ChevronsDown,
+  ChevronsUp,
+  Wallet,
+  Hourglass,
+  Flag,
+  Eye,
+  EyeOff,
+  X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -13,6 +17,8 @@ import {
   useSensor,
   useSensors,
   PointerSensor,
+  MouseSensor,
+  TouchSensor,
   type DragEndEvent
 } from '@dnd-kit/core';
 import {
@@ -25,41 +31,100 @@ import type { TravelItem } from './types';
 import { SortableItem } from './components/SortableItem';
 import { EditModal } from './components/EditModal';
 import { useItinerary } from './hooks/useItinerary';
+import { JAPAN_LOCATIONS } from './constants';
 
 const App: React.FC = () => {
   const {
     tripTitle,
     setTripTitle,
-    tripDate,
-    setTripDate,
     items,
-    setItems,
-    syncStatus
+    setItems
   } = useItinerary();
 
   const [currentTime, setCurrentTime] = useState(() => {
     const now = new Date();
     return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
   });
+  const [timeRemaining, setTimeRemaining] = useState<string | null>(null);
+  const [totalTimeRemaining, setTotalTimeRemaining] = useState<string | null>(null);
+  const [showFinished, setShowFinished] = useState(true);
+  const [isCompactMode, setIsCompactMode] = useState(false);
+  const [activeDetail, setActiveDetail] = useState<'price' | 'countdown' | 'total' | null>(null);
 
   React.useEffect(() => {
-    const timer = setInterval(() => {
+    const toMin = (t: string) => {
+      const [h, m] = t.split(':').map(Number);
+      return h * 60 + m;
+    };
+
+    const updateTime = () => {
       const now = new Date();
-      setCurrentTime(`${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`);
-    }, 60000); // Update every minute
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const s = now.getSeconds();
+      const currentHHmm = `${h}:${m}`;
+      setCurrentTime(currentHHmm);
+
+      // Find current item
+      const nowTotalSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + s;
+      const currentItem = items.find(item => {
+        const start = toMin(item.startTime) * 60;
+        const end = toMin(item.endTime || item.startTime) * 60;
+        return nowTotalSeconds >= start && nowTotalSeconds < end;
+      });
+
+      if (currentItem) {
+        const endTotalSeconds = toMin(currentItem.endTime || currentItem.startTime) * 60;
+        const diff = endTotalSeconds - nowTotalSeconds;
+        const min = Math.floor(diff / 60);
+        setTimeRemaining(`${min}分`);
+      } else {
+        setTimeRemaining(null);
+      }
+
+      // Calculate total time until the last item ends
+      if (items.length > 0) {
+        const lastItem = items[items.length - 1];
+        const lastEndStr = lastItem.endTime || lastItem.startTime;
+        const tripEndSeconds = toMin(lastEndStr) * 60;
+
+        if (nowTotalSeconds < tripEndSeconds) {
+          const totalDiffSeconds = tripEndSeconds - nowTotalSeconds;
+          const totalMin = Math.floor(totalDiffSeconds / 60);
+
+          if (totalMin >= 60) {
+            const h = Math.floor(totalMin / 60);
+            const m = totalMin % 60;
+            setTotalTimeRemaining(`${h}h ${m}m`);
+          } else {
+            setTotalTimeRemaining(`${totalMin}分`);
+          }
+        } else {
+          setTotalTimeRemaining(null);
+        }
+      } else {
+        setTotalTimeRemaining(null);
+      }
+    };
+
+    updateTime();
+    const timer = setInterval(updateTime, 1000); // Update every second
     return () => clearInterval(timer);
-  }, []);
+  }, [items]);
 
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<TravelItem | null>(null);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
+    useSensor(MouseSensor),
+    useSensor(TouchSensor, {
       activationConstraint: {
-        distance: 8,
+        delay: 250,
+        tolerance: 5,
       },
-    })
+    }),
+    useSensor(PointerSensor)
   );
 
   const totalPrice = items.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
@@ -98,75 +163,334 @@ const App: React.FC = () => {
     setItems(items.filter(item => item.id !== id));
   };
 
+  const updateItem = (updatedItem: TravelItem) => {
+    setItems(items.map(item => item.id === updatedItem.id ? updatedItem : item));
+  };
+
+  // Feature 5: Automatic Weather Fetching (High Accuracy)
+  React.useEffect(() => {
+    const fetchWeatherForItem = async (item: TravelItem) => {
+      if (item.weatherInfo || (!item.from && !item.title)) return;
+
+      const trySearch = async (q: string) => {
+        const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=1&language=ja&format=json`);
+        const data = await res.json();
+        return data.results && data.results[0] ? data.results[0] : null;
+      };
+
+      try {
+        let lat: number | undefined, lon: number | undefined;
+
+        // Step 1: Check local prioritized list against Title and Location
+        const searchText = `${item.title} ${item.from}`;
+        for (const [key, coords] of Object.entries(JAPAN_LOCATIONS)) {
+          if (searchText.includes(key)) {
+            lat = coords.lat;
+            lon = coords.lon;
+            break;
+          }
+        }
+
+        // Step 2: Fallback to Geocoding API if not in local list
+        if (lat === undefined && item.from) {
+          let result = await trySearch(item.from);
+          if (!result) result = await trySearch(`${item.from} 日本`);
+          if (!result && item.from.includes(' ')) {
+            const segments = item.from.split(/\s+/);
+            result = await trySearch(segments.slice(0, 2).join(' '));
+          }
+          if (result) {
+            lat = result.latitude;
+            lon = result.longitude;
+          }
+        }
+
+        if (lat !== undefined && lon !== undefined) {
+          const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+          const weatherData = await weatherRes.json();
+          const { temperature, weathercode } = weatherData.current_weather;
+
+          setItems(prev => prev.map(it => it.id === item.id ? { ...it, weatherInfo: { temp: Math.round(temperature), code: weathercode } } : it));
+        }
+      } catch (e) {
+        console.error("Weather fetch failed", e);
+      }
+    };
+
+    items.forEach(item => {
+      if (!item.weatherInfo && (item.from || item.title)) {
+        fetchWeatherForItem(item);
+      }
+    });
+  }, [items.map(i => `${i.title}|${i.from}`).join(',')]);
+
   return (
     <div className="app-container">
       <header className="app-header">
-        <div style={{ flex: 1 }}>
-          <input
-            className="input-trip-title"
-            value={tripTitle}
-            onChange={(e) => setTripTitle(e.target.value)}
-            placeholder="旅のタイトルを入力"
-          />
-          <div className="date-section">
-            <CalendarDays size={18} />
-            <input
-              className="input-trip-date"
-              value={tripDate}
-              onChange={(e) => setTripDate(e.target.value)}
-              placeholder="日程を入力（例: 2026年1月20日 - 24日）"
-            />
-            <div className={`sync-indicator ${syncStatus}`}>
-              {syncStatus === 'syncing' && <RotateCw size={14} className="spin" />}
-              {syncStatus === 'saved' && <CloudCheck size={14} />}
-              {syncStatus === 'error' && <CloudOff size={14} />}
-              <span>
-                {syncStatus === 'syncing' && '保存中...'}
-                {syncStatus === 'saved' && '同期済み'}
-                {syncStatus === 'error' && '同期エラー'}
-              </span>
-            </div>
+        <input
+          className="input-trip-title"
+          value={tripTitle}
+          onChange={(e) => setTripTitle(e.target.value)}
+          placeholder="旅のタイトルを入力"
+        />
+
+        <div className="header-controls">
+          <div className="header-left-group">
+
+
+            <button
+              className="info-pill"
+              onClick={() => setIsCompactMode(!isCompactMode)}
+              style={{ cursor: 'pointer', border: 'none', background: 'var(--surface-dim)', padding: '0.85rem 1.25rem' }}
+              title={isCompactMode ? "全て展開" : "全て折りたたむ"}
+            >
+              {isCompactMode ? <ChevronsDown size={22} /> : <ChevronsUp size={22} />}
+            </button>
+
+            {/* Show/Hide Finished Toggle */}
+            {items.some(it => (it.endTime || it.startTime) < currentTime) && (
+              <button
+                className="info-pill"
+                onClick={() => setShowFinished(!showFinished)}
+                style={{ cursor: 'pointer', border: 'none', background: 'var(--surface-dim)', padding: '0.85rem 1.25rem' }}
+                title={showFinished ? '完了分を隠す' : '全て表示'}
+              >
+                {showFinished ? <EyeOff size={20} /> : <Eye size={20} />}
+                <span className="price-display" style={{ fontSize: '0.9rem' }}>{showFinished ? '済' : '全'}</span>
+              </button>
+            )}
+
+            <button
+              className={`info-pill ${activeDetail === 'price' ? 'active' : ''}`}
+              title="合計金額の内訳"
+              onClick={() => setActiveDetail(activeDetail === 'price' ? null : 'price')}
+              style={{ cursor: 'pointer', border: 'none' }}
+            >
+              <Wallet size={16} />
+              <span className="price-display" style={{ fontSize: '1.05rem', fontWeight: 500 }}>{totalPrice.toLocaleString()}円</span>
+            </button>
+
+            {timeRemaining && (
+              <button
+                className={`info-pill countdown-pill ${activeDetail === 'countdown' ? 'active' : ''}`}
+                title="現在の状況詳細"
+                onClick={() => setActiveDetail(activeDetail === 'countdown' ? null : 'countdown')}
+                style={{ cursor: 'pointer', border: 'none' }}
+              >
+                <Hourglass size={16} />
+                <span className="price-display" style={{ fontSize: '1.05rem', fontWeight: 500 }}>{timeRemaining}</span>
+              </button>
+            )}
+
+            {totalTimeRemaining && (
+              <button
+                className={`info-pill ${activeDetail === 'total' ? 'active' : ''}`}
+                title="全体行程の詳細"
+                onClick={() => setActiveDetail(activeDetail === 'total' ? null : 'total')}
+                style={{ cursor: 'pointer', border: 'none' }}
+              >
+                <Flag size={16} />
+                <span className="price-display" style={{ fontSize: '1.05rem', fontWeight: 500 }}>約{totalTimeRemaining}</span>
+              </button>
+            )}
+
           </div>
         </div>
+
+        <AnimatePresence>
+          {activeDetail && (
+            <motion.div
+              initial={{ opacity: 0, y: -10, height: 0 }}
+              animate={{ opacity: 1, y: 0, height: 'auto' }}
+              exit={{ opacity: 0, y: -10, height: 0 }}
+              className="header-detail-panel"
+            >
+              <div className="detail-panel-content">
+                <div className="detail-header">
+                  <span className="detail-title">
+                    {activeDetail === 'price' && '支出内訳'}
+                    {activeDetail === 'countdown' && '現在の状況'}
+                    {activeDetail === 'total' && '全体スケジュール'}
+                  </span>
+                  <button className="detail-close-btn" onClick={() => setActiveDetail(null)}>
+                    <X size={18} />
+                  </button>
+                </div>
+
+                <div className="detail-body">
+                  {activeDetail === 'price' && (
+                    <div className="price-breakdown">
+                      {items.filter(it => (it.price || 0) > 0).map(it => (
+                        <div key={it.id} className="price-row">
+                          <span className="price-label">{it.title}</span>
+                          <span className="price-value">{Number(it.price).toLocaleString()}円</span>
+                        </div>
+                      ))}
+                      <div className="price-total-row">
+                        <span>合計</span>
+                        <span>{totalPrice.toLocaleString()}円</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeDetail === 'countdown' && (
+                    <div className="countdown-info">
+                      {(() => {
+                        const now = new Date();
+                        const currentToMin = (t: string) => {
+                          const [h, m] = t.split(':').map(Number);
+                          return h * 60 + m;
+                        };
+                        const nowTotalSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+
+                        const current = items.find(it => {
+                          const s = currentToMin(it.startTime) * 60;
+                          const e = currentToMin(it.endTime || it.startTime) * 60;
+                          return nowTotalSeconds >= s && nowTotalSeconds < e;
+                        });
+
+                        const next = items.find(it => currentToMin(it.startTime) * 60 > nowTotalSeconds);
+
+                        return (
+                          <>
+                            {current ? (
+                              <div className="status-segment">
+                                <p className="label">進行中:</p>
+                                <p className="value">{current.title}</p>
+                                <p className="sub">あと {timeRemaining} で終了</p>
+                              </div>
+                            ) : (
+                              <div className="status-segment">
+                                <p className="label">現在の予定なし</p>
+                              </div>
+                            )}
+                            {next && (
+                              <div className="status-segment">
+                                <p className="label">次の予定:</p>
+                                <p className="value">{next.title} ({next.startTime}~)</p>
+                              </div>
+                            )}
+                          </>
+                        );
+                      })()}
+                    </div>
+                  )}
+
+                  {activeDetail === 'total' && (
+                    <div className="total-schedule">
+                      <div className="schedule-row">
+                        <span className="label">開始</span>
+                        <span className="value">{items[0]?.startTime} ({items[0]?.title})</span>
+                      </div>
+                      <div className="schedule-row">
+                        <span className="label">終了</span>
+                        <span className="value">{items[items.length - 1]?.endTime || items[items.length - 1]?.startTime} ({items[items.length - 1]?.title})</span>
+                      </div>
+                      <div className="schedule-row">
+                        <span className="label">旅行終了まで</span>
+                        <span className="value" style={{ color: 'var(--accent-light)', fontWeight: 600 }}>あと約 {totalTimeRemaining || '0分'}</span>
+                      </div>
+                      {(() => {
+                        const toMin = (t: string) => {
+                          const [h, m] = t.split(':').map(Number);
+                          return h * 60 + m;
+                        };
+                        const start = toMin(items[0]?.startTime || '00:00');
+                        const end = toMin(items[items.length - 1]?.endTime || items[items.length - 1]?.startTime || '00:00');
+                        const diff = end - start;
+                        const h = Math.floor(diff / 60);
+                        const m = diff % 60;
+                        return (
+                          <div className="schedule-row" style={{ marginTop: '0.5rem', opacity: 0.6, fontSize: '0.85rem' }}>
+                            <span className="label">（総所要時間: {h > 0 ? `${h}h ${m}m` : `${m}分`}）</span>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
       <main className="timeline-view">
-        <div className="timeline-axis-line" />
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={items.map(i => i.id)} strategy={verticalListSortingStrategy}>
-            <div className="timeline-items-list">
+        <div className="timeline-items-list">
+          {(() => {
+            const toMin = (t: string) => {
+              const [h, m] = t.split(':').map(Number);
+              return h * 60 + m;
+            };
+
+            const calculateProgress = () => {
+              if (items.length === 0) return 0;
+              const now = toMin(currentTime);
+              const firstStart = toMin(items[0].startTime);
+              const lastEnd = toMin(items[items.length - 1].endTime || items[items.length - 1].startTime);
+
+              if (now <= firstStart) return 0;
+              if (now >= lastEnd) return 100;
+
+              // Robust linear interpolation across item indices
+              for (let i = 0; i < items.length; i++) {
+                const itemStart = toMin(items[i].startTime);
+                const itemEnd = toMin(items[i].endTime || items[i].startTime);
+
+                if (now >= itemStart && now <= itemEnd) {
+                  const itemProgress = (now - itemStart) / (itemEnd - itemStart || 1);
+                  return ((i + 0.5 + itemProgress * 0.5) / items.length) * 100;
+                }
+
+                if (i < items.length - 1) {
+                  const nextStart = toMin(items[i + 1].startTime);
+                  if (now > itemEnd && now < nextStart) {
+                    const gapProgress = (now - itemEnd) / (nextStart - itemEnd || 1);
+                    return ((i + 1 + gapProgress * 0.2) / items.length) * 100;
+                  }
+                }
+              }
+              return (items.findIndex(item => toMin(item.startTime) > now) / items.length) * 100;
+            };
+
+            return <div className="timeline-progress-line" style={{ height: `${calculateProgress()}%` }} />;
+          })()}
+
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext items={items.map(i => i.id)} strategy={verticalListSortingStrategy}>
               <AnimatePresence>
-                {items.map((item) => (
-                  <motion.div
-                    key={item.id}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.98 }}
-                  >
-                    <SortableItem
-                      item={item}
-                      onDelete={deleteItem}
-                      onEdit={openEditModal}
-                      currentTime={currentTime}
-                    />
-                  </motion.div>
-                ))}
+                {items
+                  .filter(item => {
+                    if (showFinished) return true;
+                    // Keep item if it's currently happening or in the future
+                    return (item.endTime || item.startTime) >= currentTime;
+                  })
+                  .map((item) => (
+                    <motion.div
+                      key={item.id}
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.98 }}
+                    >
+                      <SortableItem
+                        item={item}
+                        onDelete={deleteItem}
+                        onEdit={openEditModal}
+                        onUpdate={updateItem}
+                        currentTime={currentTime}
+                        isCompactMode={isCompactMode}
+                      />
+                    </motion.div>
+                  ))}
               </AnimatePresence>
-            </div>
-          </SortableContext>
-        </DndContext>
+            </SortableContext>
+          </DndContext>
+        </div>
 
         <div className="add-btn-container">
           <button className="btn-add-minimal" onClick={openAddModal} title="予定を追加">
             <Plus size={32} />
           </button>
-        </div>
-
-        <div className="total-price-section">
-          <div className="total-price-card">
-            <span className="total-label">合計金額</span>
-            <span className="total-val">¥{totalPrice.toLocaleString()}</span>
-          </div>
         </div>
       </main>
 
@@ -176,7 +500,7 @@ const App: React.FC = () => {
         editingItem={editingItem}
         onSave={handleSaveItem}
       />
-    </div>
+    </div >
   );
 };
 

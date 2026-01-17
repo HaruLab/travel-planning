@@ -2,11 +2,14 @@
 
 :root {
   --bg: #ffffff;
-  /* Pure white background */
   --text: #1a1a1a;
-  --text-dim: #909090;
+  --text-dim: #1a1a1a;
+  /* Unified to black */
   --accent: #000000;
-  --border: #eeeeee;
+  --accent-light: #40c057;
+  /* A fresh green for progress */
+  --surface-dim: #f5f5f5;
+  --border-light: #eeeeee;
   /* Subtle borders */
   --card-bg: #ffffff;
   /* Match background for minimal contrast */
@@ -29,66 +32,153 @@ body {
 }
 
 .app-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 8rem 4rem;
-  /* Adjusted padding for better balance on wider screen */
+  padding: calc(env(safe-area-inset-top) + 3rem) 1.25rem 4rem 1.25rem;
 }
 
 /* Header: Bold & Minimal */
 .app-header {
-  margin-bottom: 6rem;
+  margin-bottom: 3rem;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 0;
+  width: 100%;
 }
 
 .input-trip-title {
-  font-size: 5rem;
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  /* Slightly smaller max size for better balance */
   font-weight: 800;
   letter-spacing: -0.05em;
   border: none;
   background: transparent;
   outline: none;
   width: 100%;
-  margin-bottom: 1rem;
+  padding: 0;
+  line-height: 1.1;
+  color: var(--text);
 }
 
-.date-section {
+.header-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  width: 100%;
+}
+
+.header-left-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+/* Common pill style for Date and Price */
+.info-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  background: var(--surface-dim);
+  padding: 0.85rem 1.6rem;
+  border-radius: 999px;
+  color: var(--text);
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+  white-space: nowrap;
+  line-height: 1;
+  border: 1px solid var(--border-light);
+  min-height: 50px;
+  /* Unify height */
+}
+
+.info-pill:hover {
+  background: #eee;
+}
+
+.info-pill:focus-within {
+  background: white;
+  box-shadow: 0 0 0 2px var(--text);
+  color: var(--text);
+}
+
+
+
+.price-display {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.countdown-pill {
+  animation: pulse-fade 3s ease-in-out infinite;
+}
+
+@keyframes pulse-fade {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(0.98);
+    opacity: 0.8;
+  }
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.action-buttons-group {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--text-dim);
-  font-weight: 500;
-  width: 100%;
-  /* Ensure full width for alignment */
 }
 
-.input-trip-date {
-  font-family: inherit;
-  font-size: 1.1rem;
+.header-icon-btn {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 50%;
   border: none;
-  background: transparent;
-  color: inherit;
-  outline: none;
-  flex: 1;
-  /* Flexible width instead of fixed 300px */
-  min-width: 0;
-  /* Allow shrinking */
+  background: var(--surface-dim);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.header-icon-btn:hover {
+  background: var(--text);
+  color: white;
+  transform: scale(1.05);
 }
 
 .sync-indicator {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.85rem;
-  padding: 0.4rem 0.8rem;
+  font-size: 0.95rem;
+  padding: 0.75rem 1.25rem;
   border-radius: 999px;
-  background: #f8f9fa;
+  background: var(--surface-dim);
   color: var(--text-dim);
-  margin-left: 0;
-  /* Align left */
-  transition: all 0.3s;
+}
+
+.sync-text {
+  font-weight: 600;
 }
 
 .sync-indicator.syncing {
@@ -97,13 +187,14 @@ body {
 
 .sync-indicator.error {
   background: #fff0f0;
-  color: #ff4d4f;
+  color: var(--text);
 }
 
 .sync-indicator.saved {
   opacity: 0.7;
 }
 
+/* Spinner */
 .spin {
   animation: spin 1s linear infinite;
 }
@@ -118,30 +209,19 @@ body {
   }
 }
 
-.btn-add-header {
-  background: var(--text);
-  color: white;
-  width: 64px;
-  height: 64px;
-  min-width: 64px;
-  /* Fix squishing */
-  min-height: 64px;
-  /* Fix squishing */
-  border-radius: 999px;
-  /* Absolute circle */
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 0;
-  /* Remove any padding that might distort shape */
+/* Old style cleanups */
+.btn-add-header,
+.date-section,
+.total-price-section {
+  display: none;
 }
 
-.btn-add-header:hover {
-  transform: scale(1.1) rotate(90deg);
+/* Hide old classes just in case */
+
+/* New Total Price Section overrides if used as a block */
+.total-price-section {
+  display: block !important;
+  /* We will remove this class usage in App.tsx and use info-pill, but if it stays... */
 }
 
 /* Timeline: Implied Line, Typographic focus */
@@ -152,21 +232,51 @@ body {
 .timeline-items-list {
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
+  gap: 1.5rem;
+  /* Narrower gap */
   position: relative;
 }
 
-/* Continuous line across the entire list */
+/* Background thin line */
 .timeline-items-list::before {
   content: '';
   position: absolute;
   left: 32px;
-  /* Center of the 64px columns */
+  /* Center of the icon column */
   top: 0;
   bottom: 0;
-  width: 2px;
-  background: var(--border);
+  width: 4px;
+  background: var(--border-light);
+  transform: translateX(-50%);
   z-index: 0;
+}
+
+/* Foreground thicker progress line */
+.timeline-progress-line {
+  position: absolute;
+  left: 32px;
+  top: 0;
+  width: 4px;
+  /* Thicker for clarity */
+  background: var(--accent-light);
+  z-index: 1;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  transition: height 0.3s ease;
+}
+
+/* Glowing head for the progress line */
+.timeline-progress-line::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 50%);
+  width: 10px;
+  height: 10px;
+  background: var(--accent-light);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--accent-light);
 }
 
 .timeline-item {
@@ -220,7 +330,7 @@ body {
   width: 50px;
   height: 50px;
   background: white;
-  border: 4px solid var(--border);
+  border: 4px solid var(--border-light);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -235,20 +345,20 @@ body {
   border-color: #2b8a3e;
   /* Green to indicate active */
   box-shadow: 0 0 0 4px rgba(43, 138, 62, 0.15);
-  animation: pulse-ring 2s infinite;
+  animation: pulse-ring 2.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
 }
 
 @keyframes pulse-ring {
   0% {
-    box-shadow: 0 0 0 0px rgba(43, 138, 62, 0.4);
+    box-shadow: 0 0 0 0 rgba(43, 138, 62, 0.7);
   }
 
-  70% {
-    box-shadow: 0 0 0 10px rgba(43, 138, 62, 0);
+  50% {
+    box-shadow: 0 0 0 20px rgba(43, 138, 62, 0);
   }
 
   100% {
-    box-shadow: 0 0 0 0px rgba(43, 138, 62, 0);
+    box-shadow: 0 0 0 0 rgba(43, 138, 62, 0);
   }
 }
 
@@ -262,18 +372,40 @@ body {
   background: var(--card-bg);
   border-radius: var(--radius);
   padding: 2.25rem;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--border-light);
   transition: all 0.3s;
   /* Slightly thicker but very light border */
   box-shadow: none;
   /* Reduced contrast: remove shadow */
   cursor: grab;
+  position: relative;
+  overflow: hidden;
+  /* For the ripple effect inside if needed, or leave visible */
 }
 
 .current-active .item-content-col {
-  border-color: #2b8a3e;
   background: #fdfdfd;
-  box-shadow: 0 10px 30px rgba(43, 138, 62, 0.08);
+  border: 2px solid #2b8a3e;
+  /* Thicker and clearer */
+  box-shadow: 0 10px 30px rgba(43, 138, 62, 0.15);
+  animation: card-breath 3s ease-in-out infinite;
+}
+
+@keyframes card-breath {
+  0% {
+    box-shadow: 0 0 0 0 rgba(43, 138, 62, 0.2);
+    border-color: #2b8a3e;
+  }
+
+  50% {
+    box-shadow: 0 0 0 6px rgba(43, 138, 62, 0.1);
+    border-color: #40c057;
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(43, 138, 62, 0.2);
+    border-color: #2b8a3e;
+  }
 }
 
 .item-content-col:active {
@@ -393,8 +525,8 @@ body {
 }
 
 .price-val {
-  color: #2b8a3e;
-  /* Distinctive green for money */
+  color: var(--text);
+  /* Unified to black */
 }
 
 /* Add a subtle vertical line separator between tags */
@@ -417,17 +549,17 @@ body {
   gap: 1rem;
   margin-top: 2rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #f5f5f5;
+  border-top: 1px solid var(--border-light);
 }
 
 .footer-action-btn {
   background: transparent;
-  border: 1px solid #eee;
+  border: 1px solid var(--border-light);
   padding: 0.5rem 1rem;
   border-radius: 8px;
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--text-dim);
+  color: var(--text);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -436,8 +568,8 @@ body {
 }
 
 .footer-action-btn:hover {
-  background: #f9f9f9;
-  border-color: #ddd;
+  background: var(--surface-dim);
+  border-color: var(--border-light);
   color: var(--text);
 }
 
@@ -449,7 +581,7 @@ body {
 
 /* Route Box: Unified Design */
 .item-route-box {
-  background: #f0f0f0;
+  background: var(--surface-dim);
   border-radius: 14px;
   padding: 0.8rem 1.25rem;
   /* Slightly more compact padding */
@@ -458,7 +590,7 @@ body {
   gap: 1.5rem;
   margin: 0.5rem 0 1.25rem 0;
   /* Tightened top margin, kept some bottom margin for notes */
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-light);
   transition: all 0.2s;
 }
 
@@ -469,8 +601,8 @@ body {
 }
 
 .clickable-route:hover {
-  background: #e5e5e5;
-  border-color: #ccc;
+  background: var(--surface-dim);
+  border-color: var(--border-light);
   transform: translateY(-2px);
 }
 
@@ -562,7 +694,7 @@ body {
 
 .item-note {
   font-size: 1rem;
-  color: var(--text-dim);
+  color: var(--text);
   line-height: 1.6;
   margin-top: 1.5rem;
   white-space: pre-wrap;
@@ -579,7 +711,7 @@ body {
 
 .btn-large-outline {
   background: transparent;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-light);
   padding: 1.25rem 4rem;
   border-radius: 999px;
   font-size: 1.25rem;
@@ -638,7 +770,7 @@ body {
   /* Horizontal for minimal look */
   align-items: baseline;
   gap: 1.5rem;
-  border-top: 2px solid var(--border);
+  border-top: 2px solid var(--border-light);
   /* Top divider to separate from list */
   padding-top: 3rem;
   width: 100%;
@@ -704,7 +836,7 @@ body {
 }
 
 .close-circle-btn {
-  background: #f5f5f5;
+  background: var(--surface-dim);
   border: none;
   width: 48px;
   height: 48px;
@@ -717,7 +849,7 @@ body {
 }
 
 .close-circle-btn:hover {
-  background: #eee;
+  background: var(--border-light);
   transform: rotate(90deg);
 }
 
@@ -742,7 +874,7 @@ body {
 }
 
 .category-card {
-  background: #f8f9fa;
+  background: var(--surface-dim);
   border: 2px solid transparent;
   padding: 1rem 0.5rem;
   border-radius: 16px;
@@ -782,7 +914,7 @@ body {
 
 .form-input {
   width: 100%;
-  background: #f8f9fa;
+  background: var(--surface-dim);
   border: 2px solid transparent;
   padding: 1rem 1.25rem;
   border-radius: 14px;
@@ -830,7 +962,7 @@ textarea.form-input {
 
 .btn-ghost {
   background: transparent;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-light);
   padding: 0.8rem 2rem;
   border-radius: 999px;
   font-family: inherit;
@@ -842,8 +974,8 @@ textarea.form-input {
 }
 
 .btn-ghost:hover {
-  background: #f8f9fa;
-  border-color: #ddd;
+  background: var(--surface-dim);
+  border-color: var(--border-light);
 }
 
 .btn-submit {
@@ -867,7 +999,7 @@ textarea.form-input {
 /* Responsive Adjustments for Mobile */
 @media (max-width: 768px) {
   .app-container {
-    padding: 3rem 1.25rem;
+    padding: 2rem 1rem;
   }
 
   .app-header {
@@ -878,48 +1010,43 @@ textarea.form-input {
   }
 
   .input-trip-title {
-    font-size: 2.25rem;
-  }
-
-  .timeline-item {
-    grid-template-columns: 42px 1fr;
-    gap: 0.75rem;
-  }
-
-  .timeline-icon-marker {
-    width: 38px;
-    height: 38px;
-    top: 1rem;
-  }
-
-  .timeline-icon-marker svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  .timeline-items-list::before {
-    left: 21px;
-    /* Center of 42px column */
+    font-size: 1.75rem;
   }
 
   .item-content-col {
-    padding: 1.15rem;
+    padding: 1rem;
     border-radius: 16px;
   }
 
   .item-title {
-    font-size: 1.4rem;
+    font-size: 1.15rem;
     line-height: 1.3;
     margin-bottom: 0.4rem;
   }
 
   .item-time-row {
-    flex-wrap: wrap;
-    gap: 0.4rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 0;
+    -ms-overflow-style: none;
+    /* Hide scrollbar */
+    scrollbar-width: none;
+  }
+
+  .item-time-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .time-val,
+  .dist-val,
+  .price-val {
+    font-size: 0.8rem;
+    white-space: nowrap;
   }
 
   .item-time-row span:not(:last-child)::after {
-    display: none;
+    margin: 0 0.4rem;
+    /* Tighter margins on mobile */
   }
 
   .item-route-box {
@@ -942,7 +1069,7 @@ textarea.form-input {
   }
 
   .route-text {
-    font-size: 0.95rem;
+    font-size: 0.85rem;
   }
 
   .route-arrow-sep {
@@ -981,40 +1108,43 @@ textarea.form-input {
     /* Stick to bottom */
   }
 
+  /* Edit Modal Optimizations */
   .modal-card {
     padding: 1.5rem;
-    padding-bottom: max(1.5rem, env(safe-area-inset-bottom) + 1rem);
-    /* Safe area for iPhone home bar */
+    padding-top: calc(env(safe-area-inset-top) + 2rem);
+    /* Extra clearance for notch */
+    padding-bottom: 0;
+    /* Let footer handle padding */
     border-radius: 24px 24px 0 0;
-    /* Top corners only */
-    max-height: 85dvh;
-    /* Dynamic viewport height to account for address bar */
+    max-height: 95dvh;
+    /* Use more screen */
     width: 100%;
     margin: 0;
     overflow-y: auto;
-    /* Ensure scrollable */
     overscroll-behavior: contain;
-    /* Prevent background scrolling */
+    display: flex;
+    flex-direction: column;
   }
 
   .category-grid {
-    grid-template-columns: repeat(4, 1fr);
-    /* Back to 4 cols but compact */
-    gap: 0.25rem;
+    grid-template-columns: repeat(3, 1fr);
+    /* 3 cols for easier tapping */
+    gap: 0.5rem;
   }
 
   .category-card {
-    padding: 0.5rem 0.2rem;
+    padding: 0.75rem 0.2rem;
     gap: 0.25rem;
   }
 
   .category-card .cat-icon svg {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    /* Larger icon */
+    height: 24px;
   }
 
   .category-card .cat-label {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
   }
 
   .form-row {
@@ -1023,16 +1153,354 @@ textarea.form-input {
   }
 
   .modal-footer {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    /* Opaque background */
+    z-index: 50;
     flex-direction: column;
+    /* Stack buttons */
     gap: 0.75rem;
-    margin-top: 2rem;
-    padding-top: 1.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom) + 1rem);
+
+    /* Full width bleed */
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    border-top: 1px solid var(--border-light);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
   }
 
   .btn-submit,
   .btn-ghost {
     width: 100%;
-    padding: 0.85rem;
+    padding: 1rem;
+    /* Larger touch target */
+    text-align: center;
+    font-size: 1rem;
+  }
+
+  /* Fix Map Height on Mobile */
+  .map-embed-container iframe {
+    height: 300px !important;
+  }
+
+  .timeline-icon-marker {
+    width: 38px;
+    height: 38px;
+    top: 1.15rem;
+    /* Match card padding-top for center alignment */
+  }
+
+  .timeline-icon-marker svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Mobile Timeline Compact */
+  .timeline-item {
+    grid-template-columns: 48px 1fr;
+    gap: 1rem;
+  }
+
+  .item-time-col {
+    width: auto;
+    /* Let grid handle width */
     text-align: center;
   }
+
+  .time-start {
+    font-size: 1rem;
+  }
+
+  .time-end {
+    font-size: 0.7rem;
+  }
+
+  /* Adjust line and marker for smaller column */
+  .timeline-items-list::before {
+    left: 24px;
+    /* Center of 48px is 24px */
+  }
+
+  .timeline-progress-line {
+    left: 24px;
+  }
+
+  /* Sync Header alignment with screen width */
+  .app-header {
+    margin-bottom: 2rem;
+    gap: 1rem;
+    padding: 0;
+  }
+
+  .input-trip-title {
+    /* Font size already handled by clamp(), but ensure padding is safe */
+    padding-right: 1rem;
+  }
+
+  .header-controls {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    width: 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+    /* Add vertical padding to prevent curve clipping */
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .header-controls::-webkit-scrollbar {
+    display: none;
+  }
+
+  .header-left-group {
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    flex: 0 1 auto;
+  }
+
+  .header-actions {
+    justify-content: flex-end;
+    gap: 0.4rem;
+    width: auto;
+    flex-shrink: 0;
+  }
+
+  .info-pill {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    gap: 0.5rem;
+  }
+
+  .sync-indicator {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    padding: 0;
+    border-radius: 50%;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+  }
+
+  .sync-text {
+    display: none;
+    /* Hide '同期済' text on mobile to save space */
+  }
+
+  .header-icon-btn {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    background: var(--surface-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.footer-action-btn.link {
+  color: #3b82f6;
+  /* Blue for links */
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.footer-action-btn.link:hover {
+  background: #dbeafe;
+}
+
+@media print {
+  @page {
+    margin: 1cm;
+    size: auto;
+  }
+
+  body {
+    background: white;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Hide UI elements */
+  .app-header button,
+  .add-btn-container,
+  .item-footer-actions,
+  .drag-handle,
+  .modal-overlay,
+  .sync-indicator,
+  header .date-section svg,
+  .print-btn {
+    display: none !important;
+  }
+
+  /* Adjust layout for print */
+  .app-container {
+    max-width: 100%;
+    padding: 2rem 1rem;
+    background: white;
+  }
+
+  .app-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #eee;
+  }
+
+  .input-trip-title {
+    font-size: 2rem;
+    color: black;
+  }
+
+
+  /* Ensure timeline fits */
+  .timeline-view {
+    padding-left: 0;
+  }
+
+  .timeline-axis-line {
+    border-left: 2px solid #ddd;
+    left: 19px;
+  }
+
+  .timeline-item {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #eee;
+    margin-bottom: 1.5rem;
+  }
+
+  .item-title {
+    color: black;
+  }
+}
+
+/* Header Detail Panel */
+.header-detail-panel {
+  width: 100%;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.detail-panel-content {
+  background: var(--surface-dim);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  border: 1px solid var(--border-light);
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.detail-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.6;
+}
+
+.detail-close-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text);
+  opacity: 0.4;
+  transition: opacity 0.2s;
+}
+
+.detail-close-btn:hover {
+  opacity: 1;
+}
+
+/* Price Breakdown */
+.price-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+}
+
+.price-total-row {
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed #ddd;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+/* Countdown Info */
+.countdown-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.status-segment {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.status-segment .label {
+  font-size: 0.85rem;
+  opacity: 0.5;
+}
+
+.status-segment .value {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.status-segment .sub {
+  font-size: 0.9rem;
+  color: var(--accent-light);
+  font-weight: 500;
+}
+
+/* Total Schedule */
+.total-schedule {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.schedule-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.schedule-row .label {
+  font-size: 0.9rem;
+  opacity: 0.6;
+}
+
+.schedule-row .value {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.info-pill.active {
+  background: white;
+  box-shadow: 0 0 0 2px var(--text);
 }

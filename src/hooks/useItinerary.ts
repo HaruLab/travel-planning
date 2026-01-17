@@ -15,20 +15,29 @@ export const useItinerary = () => {
 
     // Fetch from local server on mount
     useEffect(() => {
-        fetch(`http://${window.location.hostname}:3001/api/itinerary`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.items) setItems(data.items);
-                if (data.title) setTripTitle(data.title);
-                if (data.date) setTripDate(data.date);
-                setHasLoaded(true);
-            })
-            .catch(() => {
-                console.log('Local server not found, falling back to localStorage/InitialData');
-                const savedItems = localStorage.getItem('voyage_items');
-                setItems(savedItems ? JSON.parse(savedItems) : INITIAL_DATA);
-                setHasLoaded(true); // Allow saving to local as fallback
-            });
+        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+        if (isLocalhost) {
+            fetch(`http://${window.location.hostname}:3001/api/itinerary`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.items) setItems(data.items);
+                    if (data.title) setTripTitle(data.title);
+                    if (data.date) setTripDate(data.date);
+                    setHasLoaded(true);
+                })
+                .catch(() => {
+                    console.log('Local server not found, falling back to localStorage');
+                    const savedItems = localStorage.getItem('voyage_items');
+                    setItems(savedItems ? JSON.parse(savedItems) : INITIAL_DATA);
+                    setHasLoaded(true);
+                });
+        } else {
+            // Production: Always use localStorage
+            const savedItems = localStorage.getItem('voyage_items');
+            setItems(savedItems ? JSON.parse(savedItems) : INITIAL_DATA);
+            setHasLoaded(true);
+        }
     }, []);
 
     // Sync to local server and localStorage only after initial load
@@ -39,16 +48,45 @@ export const useItinerary = () => {
         localStorage.setItem('voyage_title', tripTitle);
         localStorage.setItem('voyage_date', tripDate);
 
-        // Also try to save to local file
-        setSyncStatus('syncing');
-        fetch(`http://${window.location.hostname}:3001/api/itinerary`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: tripTitle, date: tripDate, items })
-        })
-            .then(() => setSyncStatus('saved'))
-            .catch(() => setSyncStatus('error'));
+        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        if (isLocalhost) {
+            setSyncStatus('syncing');
+            fetch(`http://${window.location.hostname}:3001/api/itinerary`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: tripTitle, date: tripDate, items })
+            })
+                .then(() => setSyncStatus('saved'))
+                .catch(() => setSyncStatus('error'));
+        }
     }, [items, tripTitle, tripDate, hasLoaded]);
+
+    const exportData = () => {
+        const data = { title: tripTitle, date: tripDate, items };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${tripTitle || 'travel'}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
+    const importData = (file: File) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target?.result as string);
+                if (data.items) setItems(data.items);
+                if (data.title) setTripTitle(data.title);
+                if (data.date) setTripDate(data.date);
+                alert('データを読み込みました');
+            } catch (err) {
+                alert('ファイル形式が正しくありません');
+            }
+        };
+        reader.readAsText(file);
+    };
 
     return {
         tripTitle,
@@ -58,6 +96,8 @@ export const useItinerary = () => {
         items,
         setItems,
         hasLoaded,
-        syncStatus
+        syncStatus,
+        exportData,
+        importData
     };
 };

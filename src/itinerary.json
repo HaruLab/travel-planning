@@ -10,8 +10,23 @@
       "to": "大宮駅",
       "startTime": "06:18",
       "endTime": "09:59",
+      "urls": [
+        ""
+      ],
+      "mapEmbedCode": "<iframe src=\"https://maps.google.com/maps?q=%E6%96%B0%E9%9D%92%E6%A3%AE%E9%A7%85%20to%20%E5%A4%A7%E5%AE%AE%E9%A7%85&t=&ie=UTF8&iwloc=&output=embed\" width=\"100%\" height=\"600\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\"></iframe>",
       "note": "新幹線で大宮へ（指定席）",
-      "price": 5000
+      "price": 5000,
+      "todos": [
+        {
+          "id": "i4xuhb65c",
+          "text": "切符を持つ",
+          "completed": false
+        }
+      ],
+      "weatherInfo": {
+        "temp": 1,
+        "code": 51
+      }
     },
     {
       "id": "2",
@@ -21,7 +36,12 @@
       "to": "北大宮駅",
       "startTime": "10:45",
       "endTime": "10:50",
-      "price": 150
+      "mapEmbedCode": "<iframe src=\"https://maps.google.com/maps?q=%E5%A4%A7%E5%AE%AE%E9%A7%85%20to%20%E5%8C%97%E5%A4%A7%E5%AE%AE%E9%A7%85&t=&z=13&ie=UTF8&iwloc=&output=embed\" width=\"100%\" height=\"300\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\"></iframe>",
+      "price": 150,
+      "weatherInfo": {
+        "temp": 13,
+        "code": 0
+      }
     },
     {
       "id": "3",
@@ -30,8 +50,12 @@
       "from": "大宮公園",
       "startTime": "11:00",
       "endTime": "12:30",
+      "mapEmbedCode": "<iframe src=\"https://maps.google.com/maps?q=%E5%A4%A7%E5%AE%AE%E5%85%AC%E5%9C%92&t=&z=13&ie=UTF8&iwloc=&output=embed\" width=\"100%\" height=\"300\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\"></iframe>",
       "note": "武蔵一宮 氷川神社参拝（初詣・散策）",
-      "price": 0
+      "weatherInfo": {
+        "temp": 13,
+        "code": 0
+      }
     },
     {
       "id": "4",
@@ -39,19 +63,29 @@
       "title": "昼食",
       "from": "大宮・北大宮エリア",
       "startTime": "12:30",
-      "endTime": "13:30",
+      "endTime": "13:42",
+      "mapEmbedCode": "<iframe src=\"https://maps.google.com/maps?q=%E5%A4%A7%E5%AE%AE%E3%83%BB%E5%8C%97%E5%A4%A7%E5%AE%AE%E3%82%A8%E3%83%AA%E3%82%A2&t=&z=13&ie=UTF8&iwloc=&output=embed\" width=\"100%\" height=\"300\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\"></iframe>",
       "note": "地元のランチを楽しむ",
-      "price": 1500
+      "price": 1500,
+      "weatherInfo": {
+        "temp": 13,
+        "code": 0
+      }
     },
     {
       "id": "5",
       "type": "sightseeing",
-      "title": "鉄道博物館",
-      "from": "鉄道博物館",
+      "title": "さいたま鉄道博物館",
+      "from": "鉄道博物館駅",
       "startTime": "14:00",
       "endTime": "16:00",
+      "mapEmbedCode": "<iframe src=\"https://maps.google.com/maps?q=%E9%89%84%E9%81%93%E5%8D%9A%E7%89%A9%E9%A4%A8%E9%A7%85&t=&ie=UTF8&iwloc=&output=embed\" width=\"100%\" height=\"600\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\"></iframe>",
       "note": "実物車両36両の展示を見学",
-      "price": 1500
+      "price": 1500,
+      "weatherInfo": {
+        "temp": 13,
+        "code": 0
+      }
     },
     {
       "id": "6",
@@ -61,6 +95,7 @@
       "to": "大宮駅",
       "startTime": "16:10",
       "endTime": "16:15",
+      "mapEmbedCode": "<iframe src=\"https://maps.google.com/maps?q=%E9%89%84%E9%81%93%E5%8D%9A%E7%89%A9%E9%A4%A8%E9%A7%85%20to%20%E5%A4%A7%E5%AE%AE%E9%A7%85&t=&z=13&ie=UTF8&iwloc=&output=embed\" width=\"100%\" height=\"300\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\"></iframe>",
       "note": "大宮駅へ戻る",
       "price": 191
     },
@@ -72,8 +107,13 @@
       "to": "川越駅",
       "startTime": "16:30",
       "endTime": "16:55",
+      "mapEmbedCode": "<iframe src=\"https://maps.google.com/maps?q=%E5%A4%A7%E5%AE%AE%E9%A7%85%20to%20%E5%B7%9D%E8%B6%8A%E9%A7%85&t=&z=13&ie=UTF8&iwloc=&output=embed\" width=\"100%\" height=\"300\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\"></iframe>",
       "note": "小江戸川越へ移動",
-      "price": 330
+      "price": 330,
+      "weatherInfo": {
+        "temp": 13,
+        "code": 0
+      }
     },
     {
       "id": "8",
@@ -82,6 +122,7 @@
       "from": "時の鐘・蔵造りの町並み",
       "startTime": "17:00",
       "endTime": "19:00",
+      "mapEmbedCode": "<iframe src=\"https://maps.google.com/maps?q=%E6%99%82%E3%81%AE%E9%90%98%E3%83%BB%E8%94%B5%E9%80%A0%E3%82%8A%E3%81%AE%E7%94%BA%E4%B8%A6%E3%81%BF&t=&z=13&ie=UTF8&iwloc=&output=embed\" width=\"100%\" height=\"300\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\"></iframe>",
       "note": "時の鐘や菓子屋横丁、ライトアップされた街並みを散策\n\n東武バス（一般路線バス）\n乗り場: 川越駅東口 1番・2番のりば\n\n小江戸名所めぐりバス（東武バス）\n乗り場: 川越駅東口 3番のりば\n\n小江戸巡回バス（イーグルバス）\n乗り場: 川越駅西口 2番のりば\n",
       "price": 500
     },
@@ -92,8 +133,9 @@
       "from": "川越氷川神社",
       "startTime": "19:15",
       "endTime": "19:45",
+      "mapEmbedCode": "<iframe src=\"https://maps.google.com/maps?q=%E5%B7%9D%E8%B6%8A%E6%B0%B7%E5%B7%9D%E7%A5%9E%E7%A4%BE&t=&ie=UTF8&iwloc=&output=embed\" width=\"100%\" height=\"600\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\"></iframe>",
       "note": "縁結びの神様へ参拝",
-      "price": 0
+      "todos": []
     },
     {
       "id": "11",
@@ -102,8 +144,13 @@
       "from": "大宮駅周辺",
       "startTime": "20:45",
       "endTime": "21:45",
+      "mapEmbedCode": "<iframe src=\"https://maps.google.com/maps?q=%E5%A4%A7%E5%AE%AE%E9%A7%85%E5%91%A8%E8%BE%BA&t=&z=13&ie=UTF8&iwloc=&output=embed\" width=\"100%\" height=\"300\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\"></iframe>",
       "note": "駅ビルや周辺のレストランでディナー",
-      "price": 1500
+      "price": 1500,
+      "weatherInfo": {
+        "temp": 13,
+        "code": 0
+      }
     },
     {
       "id": "16",
@@ -113,8 +160,13 @@
       "to": "新青森",
       "startTime": "19:45",
       "endTime": "22:30",
+      "mapEmbedCode": "<iframe src=\"https://maps.google.com/maps?q=%E5%A4%A7%E5%AE%AE%E9%A7%85%20to%20%E6%96%B0%E9%9D%92%E6%A3%AE&t=&z=13&ie=UTF8&iwloc=&output=embed\" width=\"100%\" height=\"300\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\"></iframe>",
       "note": "帰路へ",
-      "price": 5000
+      "price": 5000,
+      "weatherInfo": {
+        "temp": 13,
+        "code": 0
+      }
     }
   ]
 }
