@@ -412,56 +412,31 @@ const App: React.FC = () => {
                         const next = items.find(it => toMinutes(it.startTime) * 60 > nowTotalSeconds);
 
                         return (
-                          <div className="status-grid">
-                            <div className={`status-card ${current ? 'active' : 'idle'}`}>
-                              <div className="card-header">
-                                <Play size={14} className="icon" />
-                                <span>NOW</span>
+                          <div className="status-single-container">
+                            {current ? (
+                              <div className="status-hero-card">
+                                <div className="hero-status-label">CURRENT ACTIVITY</div>
+                                <h4 className="hero-title">{current.title}</h4>
+                                <div className="hero-time-row">
+                                  <Clock size={14} />
+                                  <span>{current.startTime} — {current.endTime || `${current.startTime}(+30m)`}</span>
+                                </div>
+                                <div className="hero-progress-track">
+                                  {(() => {
+                                    const s = toMinutes(current.startTime) * 60;
+                                    let e = toMinutes(current.endTime || current.startTime) * 60;
+                                    if (e <= s) e = s + 30 * 60;
+                                    const progress = Math.min(100, Math.max(0, ((nowTotalSeconds - s) / (e - s)) * 100));
+                                    return <div className="hero-progress-fill" style={{ width: `${progress}%` }} />;
+                                  })()}
+                                </div>
+                                <div className="hero-remaining-badge">
+                                  あと {timeRemaining}
+                                </div>
                               </div>
-                              {current ? (
-                                <div className="card-content">
-                                  <h4 className="title">{current.title}</h4>
-                                  <div className="time-info">
-                                    <Clock size={12} />
-                                    <span>{current.startTime} — {current.endTime || `${current.startTime}(+30m)`}</span>
-                                  </div>
-                                  <div className="status-progress-container">
-                                    {(() => {
-                                      const s = toMinutes(current.startTime) * 60;
-                                      let e = toMinutes(current.endTime || current.startTime) * 60;
-                                      if (e <= s) e = s + 30 * 60;
-                                      const progress = Math.min(100, Math.max(0, ((nowTotalSeconds - s) / (e - s)) * 100));
-                                      return (
-                                        <div className="status-progress-bar" style={{ width: `${progress}%` }} />
-                                      );
-                                    })()}
-                                  </div>
-                                  <p className="remaining-text">あと {timeRemaining}</p>
-                                </div>
-                              ) : (
-                                <div className="card-content empty">
-                                  <p>現在は予定がありません</p>
-                                </div>
-                              )}
-                            </div>
-
-                            {next && (
-                              <div className="status-card next">
-                                <div className="card-header">
-                                  <ArrowRight size={14} className="icon" />
-                                  <span>NEXT</span>
-                                </div>
-                                <div className="card-content">
-                                  <h4 className="title">{next.title}</h4>
-                                  <div className="time-info">
-                                    <Clock size={12} />
-                                    <span>{next.startTime} から開始</span>
-                                  </div>
-                                  <div className="location-info">
-                                    <Navigation size={12} />
-                                    <span>{next.from}</span>
-                                  </div>
-                                </div>
+                            ) : (
+                              <div className="status-hero-card empty">
+                                <p>現在は予定がありません</p>
                               </div>
                             )}
                           </div>
