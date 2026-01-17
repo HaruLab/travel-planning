@@ -1485,24 +1485,25 @@ textarea.form-input {
 }
 
 .status-card.active {
-  background: #f8fff9;
-  /* Extremely subtle green tint */
-  border-color: rgba(43, 138, 62, 0.3);
+  background: white;
+  border-color: var(--text);
+  /* Solid dark border for active status */
+  border-width: 2px;
 }
 
 .status-card.next {
   background: var(--surface);
+  border-color: var(--border-light);
   border-style: solid;
-  /* Changed from dashed for flatter look */
 }
 
 .card-header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   color: var(--text-dim);
   text-transform: uppercase;
 }
@@ -1512,7 +1513,7 @@ textarea.form-input {
 }
 
 .status-card.active .card-header {
-  color: #2b8a3e;
+  color: var(--text);
 }
 
 .status-card .title {
@@ -1533,24 +1534,26 @@ textarea.form-input {
 }
 
 .status-progress-container {
-  height: 8px;
+  height: 6px;
   background: rgba(0, 0, 0, 0.05);
-  border-radius: 4px;
+  border-radius: 3px;
   overflow: hidden;
-  margin-top: 0.2rem;
+  margin-top: 0.4rem;
 }
 
 .status-progress-bar {
   height: 100%;
-  background: #2b8a3e;
-  border-radius: 4px;
+  background: var(--text);
+  /* Unify with the total schedule progress bar color */
+  border-radius: 3px;
   transition: width 1s linear;
 }
 
 .remaining-text {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #2b8a3e;
+  color: var(--accent-light);
+  /* Highlight with the primary accent color */
   margin: 0;
 }
 
@@ -1650,8 +1653,7 @@ textarea.form-input {
 }
 
 .stat-item.highlight .stat-value {
-  color: #2b8a3e;
-  /* Match the active green for consistency */
+  color: var(--accent-light);
 }
 
 .info-pill.active {
@@ -1695,13 +1697,13 @@ textarea.form-input {
 .active-timer-badge {
   display: inline-flex;
   align-items: center;
-  background: #ebfbee;
-  color: #2b8a3e;
+  background: var(--surface);
+  color: var(--accent-light);
   padding: 1px 8px;
   border-radius: 12px;
   font-size: 0.75rem;
   font-weight: 500;
-  border: 1px solid rgba(43, 138, 62, 0.2);
+  border: 1px solid var(--border-light);
   line-height: 1;
   white-space: nowrap;
   transform: translateY(-2px);
