@@ -474,10 +474,15 @@ const App: React.FC = () => {
                     <div className="total-schedule-enhanced">
                       <div className="trip-summary-box">
                         <div className="trip-time-line">
-                          <div className="time-point start">
-                            <span className="time">{items[0]?.startTime}</span>
-                            <span className="point-label">START</span>
-                            <span className="location">{items[0]?.title}</span>
+                          <div className="time-labels">
+                            <div className="time-point start">
+                              <span className="time">{items[0]?.startTime}</span>
+                              <span className="location">{items[0]?.title}</span>
+                            </div>
+                            <div className="time-point end">
+                              <span className="time">{items[items.length - 1]?.endTime || items[items.length - 1]?.startTime}</span>
+                              <span className="location">{items[items.length - 1]?.title}</span>
+                            </div>
                           </div>
                           <div className="time-progress-track">
                             {(() => {
@@ -495,11 +500,6 @@ const App: React.FC = () => {
                               const progress = Math.min(100, Math.max(0, ((nowMin - start) / total) * 100));
                               return <div className="time-progress-fill" style={{ width: `${progress}%` }} />;
                             })()}
-                          </div>
-                          <div className="time-point end">
-                            <span className="time">{items[items.length - 1]?.endTime || items[items.length - 1]?.startTime}</span>
-                            <span className="point-label">GOAL</span>
-                            <span className="location">{items[items.length - 1]?.title}</span>
                           </div>
                         </div>
 
