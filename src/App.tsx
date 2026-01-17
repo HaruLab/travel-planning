@@ -12,7 +12,9 @@ import {
   Download,
   Upload,
   Database,
-  Clock
+  Clock,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -57,6 +59,18 @@ const App: React.FC = () => {
   const [isCompactMode, setIsCompactMode] = useState(false);
   const [activeDetail, setActiveDetail] = useState<'price' | 'countdown' | 'total' | 'data' | null>(null);
   const [isWarning, setIsWarning] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('travel-dark-mode');
+      return saved === 'true' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+    return false;
+  });
+
+  React.useEffect(() => {
+    document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+    localStorage.setItem('travel-dark-mode', String(isDarkMode));
+  }, [isDarkMode]);
 
   React.useEffect(() => {
     const toMin = (t: string) => {
@@ -339,6 +353,15 @@ const App: React.FC = () => {
             >
               <Database size={16} />
               <span className="price-display" style={{ fontSize: '0.9rem', fontWeight: 500 }}>データ</span>
+            </button>
+
+            <button
+              className="info-pill"
+              title={isDarkMode ? "ライトモードに切り替え" : "ダークモードに切り替え"}
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              style={{ cursor: 'pointer', border: 'none', background: 'var(--surface-dim)' }}
+            >
+              {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
             </button>
 
           </div>
@@ -629,57 +652,6 @@ const App: React.FC = () => {
         onSave={handleSaveItem}
       />
 
-      {/* Railway Station Style Electric Bulletin Board */}
-      <footer className="ticker-container">
-        <div className="ticker-content">
-          <div className="ticker-track">
-            {(() => {
-              const toMinutes = (t: string) => {
-                const [h, m] = t.split(':').map(Number);
-                return h * 60 + m;
-              };
-              const now = new Date();
-              const nowSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-
-              const current = items.find(it => {
-                const s = toMinutes(it.startTime) * 60;
-                let e = toMinutes(it.endTime || it.startTime) * 60;
-                if (e <= s) e = s + 30 * 60;
-                return nowSeconds >= s && nowSeconds < e;
-              });
-
-              const next = items.find(it => toMinutes(it.startTime) * 60 > nowSeconds);
-
-              const tickerItems = [];
-              if (current) {
-                tickerItems.push(`【NOW】${current.title} (あと${timeRemaining || '--:--'})`);
-              }
-              if (next) {
-                tickerItems.push(`【NEXT】${next.startTime}〜 ${next.title}`);
-              } else if (items.length > 0) {
-                tickerItems.push(`【FINISH】予定は全て完了しました。お疲れ様でした！`);
-              }
-
-              if (totalTimeRemaining) {
-                tickerItems.push(`【SUMMARY】旅行終了まで あと ${totalTimeRemaining}`);
-              }
-
-              const fullText = tickerItems.length > 0
-                ? tickerItems.join('　　　') + '　　　'
-                : 'Welcome to your trip! Let\'s add some plans!　　　';
-
-              // Repeat text for seamless loop
-              return (
-                <>
-                  <span className="ticker-text">{fullText}</span>
-                  <span className="ticker-text">{fullText}</span>
-                  <span className="ticker-text">{fullText}</span>
-                </>
-              );
-            })()}
-          </div>
-        </div>
-      </footer>
     </div >
   );
 };
