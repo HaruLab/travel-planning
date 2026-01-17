@@ -190,13 +190,11 @@ export const SortableItem: React.FC<SortableItemProps> = ({ item, onDelete, onEd
                                     {item.mapEmbedCode.includes('<iframe') ? (
                                         <div
                                             dangerouslySetInnerHTML={{ __html: item.mapEmbedCode }}
-                                            style={{ width: '100%', height: '400px', display: 'block' }}
+                                            style={{ display: 'block' }}
                                         />
                                     ) : (
                                         <iframe
                                             src={item.mapEmbedCode}
-                                            width="100%"
-                                            height="400"
                                             style={{ border: 0, display: 'block' }}
                                             allowFullScreen
                                             loading="lazy"

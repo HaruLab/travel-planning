@@ -1184,8 +1184,13 @@ textarea.form-input {
   }
 
   /* Fix Map Height on Mobile */
-  .map-embed-container iframe {
-    height: 300px !important;
+  .map-embed-container {
+    height: 350px !important;
+  }
+
+  .map-embed-container iframe,
+  .map-embed-container div {
+    height: 100% !important;
   }
 
   .timeline-icon-marker {
@@ -1523,4 +1528,16 @@ textarea.form-input {
 .data-management .footer-action-btn:hover {
   background: var(--surface-dim);
   border-color: var(--text);
+}
+
+/* Base Map Container Stylings */
+.map-embed-container {
+  height: 450px;
+}
+
+.map-embed-container iframe,
+.map-embed-container div {
+  width: 100% !important;
+  height: 100% !important;
+  border: 0;
 }
