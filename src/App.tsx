@@ -628,6 +628,58 @@ const App: React.FC = () => {
         editingItem={editingItem}
         onSave={handleSaveItem}
       />
+
+      {/* Railway Station Style Electric Bulletin Board */}
+      <footer className="ticker-container">
+        <div className="ticker-content">
+          <div className="ticker-track">
+            {(() => {
+              const toMinutes = (t: string) => {
+                const [h, m] = t.split(':').map(Number);
+                return h * 60 + m;
+              };
+              const now = new Date();
+              const nowSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+
+              const current = items.find(it => {
+                const s = toMinutes(it.startTime) * 60;
+                let e = toMinutes(it.endTime || it.startTime) * 60;
+                if (e <= s) e = s + 30 * 60;
+                return nowSeconds >= s && nowSeconds < e;
+              });
+
+              const next = items.find(it => toMinutes(it.startTime) * 60 > nowSeconds);
+
+              const tickerItems = [];
+              if (current) {
+                tickerItems.push(`【NOW】${current.title} (あと${timeRemaining || '--:--'})`);
+              }
+              if (next) {
+                tickerItems.push(`【NEXT】${next.startTime}〜 ${next.title}`);
+              } else if (items.length > 0) {
+                tickerItems.push(`【FINISH】予定は全て完了しました。お疲れ様でした！`);
+              }
+
+              if (totalTimeRemaining) {
+                tickerItems.push(`【SUMMARY】旅行終了まで あと ${totalTimeRemaining}`);
+              }
+
+              const fullText = tickerItems.length > 0
+                ? tickerItems.join('　　　') + '　　　'
+                : 'Welcome to your trip! Let\'s add some plans!　　　';
+
+              // Repeat text for seamless loop
+              return (
+                <>
+                  <span className="ticker-text">{fullText}</span>
+                  <span className="ticker-text">{fullText}</span>
+                  <span className="ticker-text">{fullText}</span>
+                </>
+              );
+            })()}
+          </div>
+        </div>
+      </footer>
     </div >
   );
 };
